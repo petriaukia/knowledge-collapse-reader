@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI, Human Cognition and Knowledge Collapse — Interactive Reader</title>
+<style>
+  :root {
+    --bg:       #faf9f7;
+    --bg2:      #f2f0ec;
+    --bg3:      #e8e6e1;
+    --text:     #1a1917;
+    --text2:    #4a4845;
+    --text3:    #8a8784;
+    --border:   rgba(0,0,0,0.10);
+    --border2:  rgba(0,0,0,0.18);
+    --info-bg:  #eef4fb;
+    --info-bd:  #b5d4f4;
+    --info-tx:  #0c447c;
+    --warn-bg:  #fef8ee;
+    --warn-bd:  #f4c875;
+    --warn-lft: #ba7517;
+    --warn-tx:  #633806;
+    --font-serif: 'Georgia', 'Times New Roman', serif;
+    --font-mono:  'Menlo', 'Monaco', 'Consolas', monospace;
+    --font-sans:  -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --radius:   8px;
+    --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:       #1c1b19;
+      --bg2:      #252422;
+      --bg3:      #2e2c2a;
+      --text:     #f0ede8;
+      --text2:    #b8b4ad;
+      --text3:    #706d68;
+      --border:   rgba(255,255,255,0.10);
+      --border2:  rgba(255,255,255,0.18);
+      --info-bg:  #0d1e2e;
+      --info-bd:  #185fa5;
+      --info-tx:  #85b7eb;
+      --warn-bg:  #221a09;
+      --warn-bd:  #854f0b;
+      --warn-lft: #ef9f27;
+      --warn-tx:  #fac775;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    padding: 0 1rem 4rem;
+  }
+  #root { max-width: 680px; margin: 0 auto; padding: 2rem 0; }
+  h1 { font-family: var(--font-serif); font-size: 24px; font-weight: normal; line-height: 1.3; color: var(--text); }
+  h2 { font-family: var(--font-serif); font-size: 20px; font-weight: normal; color: var(--text); margin: 2.2rem 0 0.5rem; }
+  h3 { font-family: var(--font-serif); font-size: 17px; font-weight: normal; color: var(--text); margin: 1.6rem 0 0.4rem; }
+  p  { font-family: var(--font-serif); font-size: 16px; line-height: 1.82; color: var(--text); margin: 0.75rem 0; }
+  ul { font-family: var(--font-serif); font-size: 15px; line-height: 1.75; color: var(--text); padding-left: 1.4em; margin: 0.5rem 0; }
+  li { margin: 6px 0; }
+  strong { font-weight: 600; }
+  em { font-style: italic; }
+  code {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    background: var(--bg3);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--text2);
+  }
+  hr { border: none; border-top: 0.5px solid var(--border); margin: 2.5rem 0; }
+  a { color: var(--text2); text-decoration: none; }
+  a:hover { color: var(--text); text-decoration: underline; }
+  button {
+    font-family: var(--font-mono);
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    padding: 0;
+  }
+  .label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--text3);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .guide {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    margin-bottom: 2rem;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--text2);
+    font-family: var(--font-serif);
+  }
+  .guide .mono-tag {
+    color: var(--info-tx);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .toc { display: flex; flex-wrap: wrap; gap: 5px 18px; margin-bottom: 0.5rem; }
+  .toc a { color: var(--text2); font-size: 14px; font-family: var(--font-serif); }
+  .cs-box {
+    background: var(--info-bg);
+    border: 0.5px solid var(--info-bd);
+    border-radius: var(--radius);
+    margin: 1.3rem 0;
+    overflow: hidden;
+  }
+  .cs-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    color: var(--info-tx);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: left;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+  }
+  .cs-toggle:hover { opacity: 0.8; }
+  .cs-body {
+    padding: 0 14px 14px;
+    font-family: var(--font-serif);
+    font-size: 15px;
+    line-height: 1.78;
+    color: var(--text);
+    border-top: 0.5px solid var(--info-bd);
+  }
+  .cs-body p { font-size: 15px; margin: 0.6rem 0; font-family: var(--font-serif); }
+  .key-result {
+    background: var(--warn-bg);
+    border-left: 2px solid var(--warn-lft);
+    padding: 14px 16px;
+    margin: 1.6rem 0;
+  }
+  .key-result .kr-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--warn-tx);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .key-result .kr-title {
+    font-family: var(--font-serif);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .key-result p, .key-result ul, .key-result li {
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  .app-item {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    margin: 5px 0;
+    overflow: hidden;
+  }
+  .app-toggle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text2);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-align: left;
+  }
+  .app-toggle:hover { background: var(--bg3); }
+  .app-body {
+    padding: 12px 14px 14px;
+    color: var(--text2);
+    font-size: 14px;
+    line-height: 1.8;
+    font-family: var(--font-serif);
+    border-top: 0.5px solid var(--border);
+  }
+  .meta {
+    color: var(--text2);
+    font-size: 14px;
+    font-family: var(--font-serif);
+    margin-top: 6px;
+  }
+  .footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 0.5px solid var(--border);
+    color: var(--text3);
+    font-size: 11px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+  .sec-label { padding-top: 0.5rem; }
+  .arrow { display: inline-block; width: 14px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script>
+const { useState, createElement: h } = React;
+
+function CSBox({ title, children }) {
+  const [open, setOpen] = useState(false);
+  return h('div', { className: 'cs-box' },
+    h('button', { className: 'cs-toggle', onClick: () => setOpen(o => !o) },
+      h('span', { className: 'arrow' }, open ? '▾' : '▸'),
+      'CS translation · ' + title
+    ),
+    open && h('div', { className: 'cs-body' }, children)
+  );
+}
+
+function KeyResult({ label, title, children }) {
+  return h('div', { className: 'key-result' },
+    h('div', { className: 'kr-label' }, label),
+    h('div', { className: 'kr-title' }, title),
+    children
+  );
+}
+
+function AppItem({ title, children }) {
+  const [open, setOpen] = useState(false);
+  return h('div', { className: 'app-item' },
+    h('button', { className: 'app-toggle', onClick: () => setOpen(o => !o) },
+      h('span', null, title),
+      h('span', { style: { color: 'var(--text3)', marginLeft: 12, flexShrink: 0 } }, open ? '−' : '+')
+    ),
+    open && h('div', { className: 'app-body' }, children)
+  );
+}
+
+const P = ({ children, style }) => h('p', { style }, children);
+
+function App() {
+  return h('div', null,
+
+    // ── Header ──
+    h('div', { style: { marginBottom: '2rem' } },
+      h('div', { className: 'label sec-label' }, 'NBER Working Paper 34910 · February 2026 · Interactive reader'),
+      h('h1', null, 'AI, Human Cognition and Knowledge Collapse'),
+      h('div', { className: 'meta' }, 'Daron Acemoglu · Dingwen Kong · Asuman Ozdaglar · ', h('em', null, 'MIT / NBER'))
+    ),
+
+    // ── Reading guide ──
+    h('div', { className: 'guide' },
+      h('div', { className: 'label', style: { color: 'var(--info-tx)', marginBottom: 6 } }, 'How to read this'),
+      'Conceptual read for a CS/ML background. Math only where it carries insight. Tap ',
+      h('span', { className: 'mono-tag' }, '▸ CS translation'),
+      ' boxes for econ→CS mappings. Amber callouts are the key results. Appendix proofs are collapsed at the bottom.'
+    ),
+
+    // ── ToC ──
+    h('div', { style: { marginBottom: '1.5rem' } },
+      h('div', { className: 'label' }, 'Contents'),
+      h('div', { className: 'toc' },
+        ['Abstract','Introduction','The model','Substitutes & complements','Steady states','Welfare','Regulation','Extensions','Conclusion','Appendix']
+          .map((s, i) => h('a', { key: i, href: '#s' + i }, (i+1) + '. ' + s))
+      )
+    ),
+
+    h('hr'),
+
+    // ── Abstract ──
+    h('div', { id: 's0' },
+      h('div', { className: 'label sec-label' }, 'Abstract'),
+      h('h2', null, 'What this paper is about'),
+      h(P, null, 'Generative AI — especially ', h('em', null, 'agentic'), ' AI that gives personalised, context-specific recommendations — can improve individual decisions in the short run while systematically destroying collective human knowledge in the long run.'),
+      h(P, null, 'The mechanism: when AI supplies good personalised advice, individuals have less incentive to learn. But human learning also produces ', h('em', null, 'general knowledge'), ' — the shared, community-level understanding that everyone draws on. As individuals learn less, this commons erodes. Once it falls below a critical threshold, the system tips into a ', h('strong', null, 'knowledge-collapse steady state'), ' — zero collective knowledge, permanently — even as individual decisions may have seemed fine right up until collapse.'),
+      h(P, null, 'Central finding: welfare is non-monotone in AI accuracy. There is an interior welfare-maximising level of AI precision, beyond which more accurate AI is harmful. Making AI as good as technically possible is not the socially optimal design choice.'),
+      h(CSBox, { title: 'The sixty-second version' },
+        h('p', null, 'Stack Overflow is dying because everyone uses ChatGPT. This paper asks: what happens next, formally? Answer: if AI is accurate enough, and if human effort adjusts quickly enough to reduced incentives, the death of knowledge-sharing platforms is not a temporary transition — it\'s a permanent equilibrium.'),
+        h('p', { style: { marginTop: 8 } }, 'The model formalises exactly that dynamic, derives the conditions under which it\'s inevitable, and characterises the regulatory policy that prevents it. The optimal fix: make AI deliberately less accurate than its maximum, and invest heavily in the infrastructure through which humans share what they know.')
+      )
+    ),
+
+    h('hr'),
+
+    // ── Introduction ──
+    h('div', { id: 's1' },
+      h('div', { className: 'label sec-label' }, 'Section 1'),
+      h('h2', null, 'Introduction'),
+      h(P, null, 'The paper opens with a genuine disagreement among serious researchers. On one side: AlphaFold solved a 50-year protein-structure problem. AI-assisted customer service agents measurably outperform those working alone. On the other: ChatGPT use appears to reduce writers\' ability to remember their own arguments (and changes the neural connectivity underlying this, Kosmyna et al. 2025), reduces individual creativity, and homogenises output. Stack Overflow has quietly collapsed. Wikipedia has declined specifically in the domains where ChatGPT is a good substitute.'),
+      h(P, null, 'Both sides cite real evidence. So the question isn\'t "is AI good or bad for human knowledge?" but ', h('strong', null, '"under what conditions is it each, and why?"'), ' This is what the paper answers.'),
+      h(CSBox, { title: 'Two key empirical datasets' },
+        h('p', null, h('strong', null, 'Del Rio-Chanona et al. (2024):'), ' Stack Overflow activity dropped sharply and causally after ChatGPT launch — fewer questions, fewer expert answers, less new knowledge created. Experienced coders have stopped answering because the demand has vanished.'),
+        h('p', { style: { marginTop: 8 } }, h('strong', null, 'Lyu et al. (2025):'), ' Wikipedia edits and reads declined specifically in domains where ChatGPT is an effective substitute — not globally, just selectively. This pattern is exactly what the model predicts.')
+      ),
+      h(P, null, 'The theoretical innovation is a distinction that resolves the debate: whether AI provides ', h('strong', null, 'general knowledge'), ' (shared, community-level, like what a textbook gives you) or ', h('strong', null, 'context-specific knowledge'), ' (personalised, like what an expert adviser gives you). These have opposite effects on learning incentives, and the concern is specifically about the rise of agentic AI.'),
+      h(CSBox, { title: 'General vs specific knowledge — in CS terms' },
+        h('p', null, h('strong', null, 'General knowledge:'), ' documentation, architecture patterns, algorithm fundamentals, canonical Stack Overflow answers. Broadly applicable, slow-changing, community-produced.'),
+        h('p', { style: { marginTop: 8 } }, h('strong', null, 'Context-specific knowledge:'), ' the fix for your particular bug, the recommendation calibrated to your codebase and constraints. Individually valuable. AI is increasingly excellent at this.'),
+        h('p', { style: { marginTop: 8 } }, 'The paper\'s thesis: when AI gets very good at the second kind, people stop producing the first kind as a byproduct of their own learning — and the commons degrades.')
+      )
+    ),
+
+    h('hr'),
+
+    // ── Model ──
+    h('div', { id: 's2' },
+      h('div', { className: 'label sec-label' }, 'Section 2'),
+      h('h2', null, 'The model — conceptual overview'),
+      h('h3', null, 'Two kinds of knowledge, both required'),
+      h(P, null, 'Every decision requires two things: general knowledge about how the world works, and specific knowledge about your individual situation. These are ', h('em', null, 'complements'), ' — you need both. A doctor with excellent general medical knowledge but no information about the specific patient is nearly as useless as a doctor with all the patient\'s data but no medical training. The model formalises this as a Leontief-style complement: tasks succeed only when both predictions are within tolerance.'),
+      h(CSBox, { title: 'Kalman filtering and "precision" as currency' },
+        h('p', null, 'The model\'s currency is ', h('em', null, 'precision'), ' = 1/variance. Higher precision means lower uncertainty. The "stock of general knowledge" Xₜ is the precision of the community\'s belief about the current state of the world — how well-calibrated collective knowledge is at time t.'),
+        h('p', { style: { marginTop: 8 } }, 'Updates follow a Kalman filter recursion — the same update rule used in sensor fusion and Bayesian online learning. Each period: community knowledge is improved (new human-generated signals aggregated) and diluted (the world changes, modelled as a random walk). The steady state is where these forces balance. Standard online learning applied to a social setting.')
+      ),
+      h('h3', null, 'Learning creates a public good — and a market failure'),
+      h(P, null, 'When an agent exerts effort to learn, they produce two signals simultaneously. The private one: a signal about their own specific context. The public one: a thin contribution to the community\'s stock of general knowledge. Same act of working — dual output. The market failure: each agent\'s private return comes almost entirely from the private signal (fixing their own problem). The public contribution — the Stack Overflow answer they might write — is an externality they don\'t internalise.'),
+      h(CSBox, { title: 'Open source, Wikipedia, and the commons' },
+        h('p', null, 'This is the same dynamic as open source sustainability (why maintainers burn out), Wikipedia editing decline, and academic peer review attrition. The model formalises exactly this. Its contribution is showing that agentic AI dramatically increases the incentive to free-ride — not maliciously, but by making the private-return part of learning redundant, which also eliminates its public-goods byproduct.')
+      ),
+      h('h3', null, 'Agentic AI as a substitute, not a complement'),
+      h(P, null, 'The model introduces AI as an additional signal about an agent\'s individual context — not about general knowledge. A search engine helps you find existing general knowledge faster (complement). An agentic AI provides your personalised answer, making the private-signal component of your own learning effort redundant (substitute). The paper focuses on this second capability, which is the direction of current AI development.'),
+      h(CSBox, { title: 'Why agentic specifically — not just AI in general' },
+        h('p', null, h('strong', null, 'Tier 1 — General knowledge retrieval'), ' (search engines, encyclopedic LLM Q&A): faster access to existing knowledge. Complement to effort. Learning incentives largely intact.'),
+        h('p', { style: { marginTop: 6 } }, h('strong', null, 'Tier 2 — Knowledge aggregation'), ' (LLMs synthesising across sources): helps the community share general knowledge more efficiently. Also broadly positive.'),
+        h('p', { style: { marginTop: 6 } }, h('strong', null, 'Tier 3 — Agentic, context-specific recommendation'), ' (Copilot writing your code, AI diagnosing your patient, portfolio agent trading for you): directly substitutes for the private-return component of learning. This is the concerning tier, and the current development trajectory.')
+      ),
+      h('h3', null, 'Islands: the knowledge-sharing infrastructure'),
+      h(P, null, 'Agents are grouped into "islands" — communities within which general knowledge is aggregated and shared across time. The island size ', h('strong', null, 'I'), ' represents how good the knowledge-sharing infrastructure is. Large I: Wikipedia, GitHub, mature professional communities. Small I: siloed teams, proprietary codebases. This parameter turns out to be the hero of the story — the one lever that unambiguously, always, improves welfare.')
+    ),
+
+    h('hr'),
+
+    // ── Substitutes ──
+    h('div', { id: 's3' },
+      h('div', { className: 'label sec-label' }, 'Section 3'),
+      h('h2', null, 'Substitutes and complements'),
+      h(P, null, 'The first key result formalises the two competing forces. Everything that follows flows from it.'),
+      h(KeyResult, { label: 'Observation 1', title: 'The fundamental asymmetry' },
+        h('p', null, h('strong', null, 'General knowledge complements effort.'), ' When community knowledge X is high, each unit of personal learning effort is worth more — because general and specific knowledge are complements, and you already have a strong general signal. More community knowledge → more incentive to learn. A positive feedback.'),
+        h('p', { style: { marginTop: 8 } }, h('strong', null, 'AI precision substitutes for effort.'), ' When AI gives accurate personalised recommendations, there\'s less return to developing your own judgment. Higher AI precision τA → lower marginal value of learning effort. A negative feedback on knowledge production.')
+      ),
+      h(CSBox, { title: 'In signal processing terms' },
+        h('p', null, 'Both effects follow from standard diminishing returns to information. Given the Leontief complementarity, your decision quality is limited by the weaker input. When general knowledge X is high, your bottleneck is specific knowledge — so the marginal value of effort-produced specific signal is high. When AI provides a high-precision specific signal, your bottleneck shifts back to general knowledge — so the marginal value of your own specific learning drops.'),
+        h('p', { style: { marginTop: 8 } }, 'Formally: ∂²U/∂e∂X > 0 (effort and general knowledge are strategic complements), ∂²U/∂e∂τA < 0 (effort and AI precision are strategic substitutes). Everything downstream follows from this sign pattern.')
+      ),
+      h(P, null, 'The consequence unfolds over time. Higher AI precision → individuals reduce effort → less general knowledge contributed → lower community stock → lower marginal return to effort → effort falls further. This spiral can produce collapse. At every step, individuals behave rationally. The failure is purely collective.')
+    ),
+
+    h('hr'),
+
+    // ── Steady states ──
+    h('div', { id: 's4' },
+      h('div', { className: 'label sec-label' }, 'Section 4'),
+      h('h2', null, 'Steady states and knowledge collapse'),
+      h(P, null, 'The model\'s long-run dynamics depend on how elastic human effort is — how quickly people reduce effort when incentives drop. This is parameterised by α, a cost-curvature exponent. The critical threshold: whether ', h('strong', null, 'α − 1 is above or below ¼'), '.'),
+      h(CSBox, { title: 'What does effort elasticity actually mean?' },
+        h('p', null, h('code', null, 'α'), ' governs how quickly people cut effort when incentives drop. High elasticity (α-1 < ¼): people rapidly stop working when returns fall — the freelancer who immediately finds other work. Low elasticity (α-1 > ¼): effort is sticky — the researcher who keeps working through slow periods, the medical professional with mandatory training standards.'),
+        h('p', { style: { marginTop: 8 } }, 'The stability question near zero: when general knowledge is nearly gone, does equilibrium effort fall faster or slower than the rate needed to maintain that tiny remaining amount? If faster (high elasticity): zero is stable, small perturbations cascade. If slower (low elasticity): zero is unstable, the system self-corrects.')
+      ),
+      h('h3', null, 'Regime 1: the resilient case (α − 1 > ¼)'),
+      h(P, null, 'When effort is not too elastic, there is a unique stable high-knowledge equilibrium. Agentic AI erodes the commons — always — but cannot trigger full collapse. The economy self-corrects to a strictly positive equilibrium from any positive starting point.'),
+      h(KeyResult, { label: 'Proposition 4', title: 'Resilient regime' },
+        h('ul', null,
+          h('li', null, 'Higher AI precision (τA ↑): lower steady-state general knowledge, lower effort, but higher individual context-specific precision. AI helps individuals while quietly degrading the commons.'),
+          h('li', null, 'Larger aggregation capacity (I ↑): higher general knowledge, higher effort, higher individual precision. All three rise together — unambiguously positive.')
+        ),
+        h('p', { style: { marginTop: 8, fontSize: 14, color: 'var(--text2)' } }, 'No collapse risk here, just monotone erosion from AI and improvement from aggregation. The dangerous case is below.')
+      ),
+      h('h3', null, 'Regime 2: the fragile case (α − 1 < ¼)'),
+      h(P, null, 'When effort is elastic, the dynamics become non-linear. There can now be multiple stable equilibria — and one of them is zero general knowledge.'),
+      h(KeyResult, { label: 'Proposition 5', title: 'Knowledge collapse' },
+        h('ul', null,
+          h('li', { style: { marginBottom: 8 } }, h('strong', null, 'If τA is below the collapse threshold τᶜA:'), ' three equilibria — zero knowledge (stable), a threshold state (unstable), and high knowledge (stable). Outcome depends on where you start. Current knowledge above X̄m → converges to high state. Below X̄m → spirals to zero.'),
+          h('li', null, h('strong', null, 'If τA exceeds τᶜA (complete collapse):'), ' the high-knowledge equilibrium disappears entirely. Only steady state is zero general knowledge, and the economy converges there from any initial condition — regardless of how good things look today.')
+        )
+      ),
+      h(CSBox, { title: 'Basins of attraction — standard dynamical systems' },
+        h('p', null, 'Fully standard 1D discrete dynamical systems. The model defines a map F(X) where X is community precision. Fixed points of F are steady states. The three-equilibrium case corresponds to F crossing the 45° line three times: stable intersections at slope < 1, unstable at slope > 1. The threshold X̄m is the basin boundary between the two attractors.'),
+        h('p', { style: { marginTop: 8 } }, 'Complete collapse is F(X) < X for all positive X — the map lies below the 45° line, only fixed point is zero. As τA increases, the two positive fixed points approach in a saddle-node bifurcation and annihilate. The transition is discontinuous: a small increase in AI precision can cause a large drop in long-run general knowledge.')
+      ),
+      h(KeyResult, { label: 'Proposition 6', title: 'What determines resilience' },
+        h('ul', null,
+          h('li', { style: { marginBottom: 5 } }, 'Better aggregation infrastructure (larger I): collapse threshold τᶜA strictly increases. Stronger communities tolerate more accurate AI before collapse.'),
+          h('li', null, 'Stronger complementarity between general and specific knowledge: collapse threshold strictly increases. Domains where both types are truly necessary are more robust.')
+        )
+      )
+    ),
+
+    h('hr'),
+
+    // ── Welfare ──
+    h('div', { id: 's5' },
+      h('div', { className: 'label sec-label' }, 'Section 5'),
+      h('h2', null, 'Welfare — why more isn\'t always better'),
+      h(P, null, 'The central policy result: welfare is ', h('em', null, 'non-monotone'), ' in AI precision. There is an interior welfare-maximising level of AI accuracy. Beyond that level, more accurate AI reduces long-run welfare — even accounting for all immediate individual benefits.'),
+      h(KeyResult, { label: 'Propositions 10 & 11', title: 'Non-monotone welfare' },
+        h('p', null, 'There exists a finite threshold τ*A such that:'),
+        h('ul', null,
+          h('li', null, 'For τA below τ*A: more accurate AI raises welfare. Direct benefit dominates.'),
+          h('li', null, 'For τA above τ*A: more accurate AI lowers welfare. Indirect damage dominates.'),
+          h('li', null, 'As AI accuracy → ∞: long-run welfare → 0. Complete collapse, eventually.')
+        ),
+        h('p', { style: { marginTop: 8, fontSize: 14, color: 'var(--text2)' } }, '"Best possible AI" is not the welfare-optimal AI. The welfare-maximising precision is strictly finite and interior.')
+      ),
+      h(P, null, 'Two forces whose relative magnitudes shift as accuracy increases. The ', h('strong', null, 'direct effect:'), ' higher precision immediately improves individual decision quality. The ', h('strong', null, 'indirect effect:'), ' higher precision crowds out human learning, reducing the community stock of general knowledge, which (through the complement relationship) makes all remaining human learning less productive.'),
+      h(P, null, 'The direct effect faces diminishing returns: once AI is already highly accurate, one more unit of precision barely changes outcomes. The indirect effect compounds: as general knowledge falls, its marginal value rises — losing it gets more costly. As τA grows, the ratio of indirect cost to direct benefit eventually exceeds 1.'),
+      h(CSBox, { title: 'Why diminishing returns changes everything' },
+        h('p', null, 'The direct benefit of precision is bounded — a 99% accurate AI made 99.9% accurate barely moves outcomes. But the indirect damage is unbounded in the limit — as community knowledge stock approaches zero, the cost of losing it grows without bound. The welfare curve must eventually turn down regardless of parameterisation.')
+      ),
+      h(KeyResult, { label: 'Proposition 9', title: 'Aggregation is unambiguously good' },
+        h('p', null, 'Welfare is strictly increasing in aggregation capacity I, with no non-monotonicity. There is no "too much knowledge sharing." Better aggregation infrastructure raises welfare through two channels: directly improving human knowledge production (level effect), and in the fragile regime expanding the basin of attraction of the high-knowledge equilibrium (selection effect). No tradeoff. Always better.')
+      ),
+      h('h3', null, 'The concerning scaling law'),
+      h(P, null, 'Proposition 12 asks: how quickly do the welfare-maximising precision τ*A and collapse threshold τᶜA grow as aggregation capacity I grows? The answer: only ', h('em', null, 'logarithmically'), ' — both thresholds scale as O(log I). To double the collapse threshold, you need to roughly square the aggregation capacity.'),
+      h(CSBox, { title: 'Log vs exponential — the practical implication' },
+        h('p', null, 'If AI capability grows exponentially (roughly the current trend) while protection from aggregation grows only logarithmically, AI capability will routinely outrun knowledge-infrastructure investments. You cannot build your way to safety with knowledge-sharing investments alone. Precision regulation — directly limiting AI accuracy — is the only lever that addresses the substitution effect at source.')
+      )
+    ),
+
+    h('hr'),
+
+    // ── Regulation ──
+    h('div', { id: 's6' },
+      h('div', { className: 'label sec-label' }, 'Section 6'),
+      h('h2', null, 'Regulation via information design'),
+      h(P, null, 'Given that AI accuracy above τ*A reduces welfare, what should a regulator do? The paper studies ', h('strong', null, 'garbling'), ' — adding deliberate noise to AI recommendations to reduce their effective precision.'),
+      h(CSBox, { title: 'Garbling as a technical tool' },
+        h('p', null, 'In information theory, garbling a channel reduces its precision. In ML terms: it\'s like adding dropout to the output layer, widening confidence intervals before displaying them to users, or displaying explicit uncertainty instead of point estimates. Real-world equivalents: mandating uncertainty quantification, requiring human-in-the-loop above confidence thresholds, or capping how specific AI recommendations are allowed to be.')
+      ),
+      h(KeyResult, { label: 'Proposition 13', title: 'The optimal two-phase policy' },
+        h('ul', null,
+          h('li', { style: { marginBottom: 8 } }, h('strong', null, 'Phase 1 — Suppression:'), ' fully block AI recommendations for a finite period M*. Forces reliance on human learning, rebuilding community knowledge stock until it rises above the basin-of-attraction threshold X̄m(τ*).'),
+          h('li', null, h('strong', null, 'Phase 2 — Optimal cap:'), ' permanently limit effective AI precision to τ* = min(τA, τ*A). Allows AI to deliver its full welfare-improving benefit without triggering the crowd-out spiral.')
+        ),
+        h('p', { style: { marginTop: 8, fontSize: 14, color: 'var(--text2)' } }, 'If current knowledge already exceeds the Phase 2 threshold, Phase 1 is unnecessary — go straight to the cap. Phase 1 duration M* is finite and explicitly characterised.')
+      ),
+      h(CSBox, { title: 'Circuit breaker + rate limiter' },
+        h('p', null, 'Phase 1 is a circuit breaker — triggered when a system enters a dangerous state, it cuts the problematic input to allow recovery. Phase 2 is a rate limiter — a permanent cap preventing the system from exceeding a safe threshold. Standard resilience pattern in distributed systems: emergency isolation followed by steady-state rate control. The difference here: the trigger isn\'t a system fault — it\'s the normal, rational operation of individually-optimising agents that happens to have catastrophic collective externalities.')
+      )
+    ),
+
+    h('hr'),
+
+    // ── Extensions ──
+    h('div', { id: 's7' },
+      h('div', { className: 'label sec-label' }, 'Section 7'),
+      h('h2', null, 'Extensions and robustness'),
+      h('h3', null, '7.1  What if AI also improves knowledge aggregation?'),
+      h(P, null, 'The obvious objection: better AI also improves search, synthesis, and knowledge sharing — so the aggregation benefit should offset the substitution effect. The paper tests this: the main results survive as long as AI\'s aggregation benefit doesn\'t grow exponentially in τA. Sub-exponential growth (η < η_crit) is not sufficient to prevent long-run collapse.'),
+      h(CSBox, { title: 'What this says about current AI development' },
+        h('p', null, 'The burden shifts to the optimist. You need to show that AI\'s aggregation benefits grow faster than linearly in AI capability — a strong, empirically uncertain claim. "AI helps with knowledge synthesis" is not sufficient. Given current evidence on declining open knowledge platforms, the optimistic defence looks hard to sustain.')
+      ),
+      h('h3', null, '7.2  What about AI-generated synthetic data?'),
+      h(P, null, 'Synthetic data raises the floor of the collapse state from zero to some positive value — preventing total erasure of general knowledge. But if synthetic data is not a perfect substitute for human-generated knowledge (which the empirical literature strongly suggests), the qualitative results persist.'),
+      h(CSBox, { title: 'Model collapse — the empirical backing' },
+        h('p', null, 'Shumailov et al. (2024, Nature) showed that models trained recursively on AI-generated data degrade — the "model collapse" phenomenon. The paper cites this as evidence that synthetic data cannot fully substitute for human-generated knowledge in open-world settings. Chess engines can generate useful synthetic data indefinitely (closed, verifiable world). General-purpose LLMs cannot — there\'s no ground truth to correct against.')
+      ),
+      h('h3', null, '7.3  What if people can separate general from specific learning?'),
+      h(P, null, 'The baseline assumes learning effort jointly produces both types of knowledge. If separation is imperfect (β > 0), the main results hold with shifted parameter thresholds. Only perfect separability (β = 0) eliminates the collapse dynamic — and the paper argues this is unrealistic, since you can\'t fully separate personal learning from contribution to collective understanding.')
+    ),
+
+    h('hr'),
+
+    // ── Conclusion ──
+    h('div', { id: 's8' },
+      h('div', { className: 'label sec-label' }, 'Section 8'),
+      h('h2', null, 'Conclusion and implications'),
+      h(P, null, 'The paper makes precise sense of an otherwise confusing set of findings. AI is helping individuals and apparently degrading collectives — not a contradiction. It\'s the natural consequence of a public goods problem supercharged by a technology that solves the private-value component of learning.'),
+      h(KeyResult, { label: 'Summary', title: 'Three things to carry away' },
+        h('ul', null,
+          h('li', { style: { marginBottom: 8 } }, h('strong', null, 'Welfare is non-monotone in AI accuracy.'), ' An interior optimal precision exists, strictly below the maximum achievable. Robust theoretical result.'),
+          h('li', { style: { marginBottom: 8 } }, h('strong', null, 'Aggregation infrastructure always helps.'), ' No non-monotonicity here — investment in knowledge-sharing is unambiguously good. But protection scales only logarithmically against exponential AI capability growth.'),
+          h('li', null, h('strong', null, 'Precision caps are the right regulatory tool.'), ' The optimal policy garbles recommendations to preserve learning incentives. Phase 1 rebuilds the commons; Phase 2 maintains it.')
+        )
+      ),
+      h(CSBox, { title: 'Which domains are most at risk?' },
+        h('p', null, 'Risk depends on effort elasticity α. Domains where professional standards enforce minimum learning — medicine (mandatory training), law (bar requirements), academia (PhD) — have high resistance. Domains with elastic effort and fast AI adoption — software development, content creation, retail financial advice — are closer to the dangerous regime. The model predicts that junior professionals growing up with agentic AI will have significantly lower general domain knowledge than previous generations — not because they\'re less capable, but because the incentive structure has changed.')
+      ),
+      h(CSBox, { title: 'What the paper explicitly doesn\'t cover' },
+        h('p', null, 'No empirical estimation of α in real domains. No model of strategic AI deployment. No heterogeneous agent analysis (experts and novices respond differently). No dynamic game between AI developers and regulators. The paper\'s tractable architecture is designed to support these extensions — they\'re flagged as explicit open problems, not oversights.')
+      )
+    ),
+
+    h('hr'),
+
+    // ── Appendix ──
+    h('div', { id: 's9' },
+      h('div', { className: 'label sec-label' }, 'Appendix'),
+      h('h2', null, 'Formal proofs'),
+      h('p', { style: { fontSize: 14, color: 'var(--text2)', margin: '0.5rem 0 1rem', fontFamily: 'var(--font-serif)' } }, 'For verification. Safe to skip unless you want to check the mathematics.'),
+      ...[
+        { t:'Lemma 1 — State transition map properties', b:'Shows F is continuous, strictly increasing on R≥0 with F(0) = 0 and F(+∞) = Σ⁻². Best-response effort e(X, τA) is continuous and strictly increasing in X via the implicit function theorem (∂eΨ < 0, ∂XΨ > 0). F inherits monotonicity. Foundation for all subsequent steady-state analysis.' },
+        { t:'Proposition 1 — Equilibrium existence and uniqueness', b:'Expected utility is strictly concave in effort per period (diminishing marginal benefit, convex cost), so best response e(Xt, τA) is unique. By symmetry all agents on an island choose identically. The Kalman recursion Xt+1 = F(Xt) pins down a unique symmetric equilibrium path.' },
+        { t:'Proposition 2 — Monotone comparative statics of F', b:'F(X) = [Σ² + (X + λGIe(X, τA))⁻¹]⁻¹ is increasing in X + λGIe. Since e(X, τA) is strictly increasing in I and strictly decreasing in τA (from first-order condition analysis), F is pointwise increasing in I and pointwise decreasing in τA for all X > 0.' },
+        { t:'Propositions 3 & 5 — Steady-state characterisation', b:'The "effort-first" trick: rewrite the fixed-point condition F(X̄) = X̄ in terms of steady-state effort ē. This yields D(e) = 0 where log(MB(x)) is strictly concave in x = log(e) (Lemma A-2) while log(MC(x)) = (α-1)x is linear. When α-1 > ¼: concavity implies exactly one positive root. When α-1 < ¼: near-zero behaviour flips sign, D has zero or two positive roots, with the transition at τᶜA where roots coalesce in a saddle-node bifurcation.' },
+        { t:'Lemma 2 — Stability of the zero steady state', b:'Near X = 0, maintaining a small stock requires effort of order Θ(X²). Equilibrium effort near zero is Θ(X^{1/(2(α-1))}). When α-1 > ¼: exponent < 2, effort decays slower than needed — zero is locally unstable. When α-1 < ¼: exponent > 2, effort decays faster — zero is locally stable.' },
+        { t:'Lemmas A-3, A-4 — GW asymptotics and R(E) monotonicity', b:'GW(E) = G(W(E)) maps aggregate effort to hitting probability for the general knowledge task. Key results: GW(E) ~ κ₁E^(1/4) near zero. Log-elasticity R(E) = EG\'W/GW is strictly decreasing on (0,∞) with limit 1/4 at zero and 0 at infinity. These asymptotics are the technical engine behind stability results and scaling laws.' },
+        { t:'Propositions 6–8 — Comparative statics in the collapse regime', b:'τᶜA is the supremum of the set of τA values supporting positive steady states. Strict monotonicity in I follows from pointwise monotonicity of D in I via the implicit function theorem. Basin threshold X̄m is decreasing in I. Non-monotonicity of Ȳh in τA requires careful analysis near the collapse threshold, where the IFT denominator changes sign.' },
+        { t:'Propositions 9–11 — Welfare', b:'Welfare comparative statics use the Envelope Theorem on steady-state utility. Key quantity: ratio IE/DE (indirect to direct effect of τA on welfare). Assumption 2 rules out double sign changes. Under this, IE/DE is strictly increasing in τA via Lemma B-1. Threshold τ*A is where IE/DE = 1.' },
+        { t:'Proposition 12 — Scaling laws', b:'As I → ∞: at the collapse tangency, aggregate effort ĒI → E* (unique root of R(E*) = α-1). Using the Gaussian tail approximation gives τᶜA ~ 2(α-1)·log I. The welfare-optimal τ*A ~ 2(α-1)/α·log I. The ratio τ*A/τᶜA → 1/α, always strictly less than 1.' },
+        { t:'Proposition 13 — Optimal information design', b:'For any eventually-constant policy, long-run welfare is 0 or Ū⁺(τ̄). Under full suppression (Phase 1), state converges to X̄h(0) > X̄m(τ*) by a finite margin, so finite M* suffices. Optimality: any eventually-constant policy achieves at most max_τ Ū⁺(τ) = Ū⁺(τ*), achieved exactly by the two-phase policy.' },
+        { t:'Propositions 14–16 — Extensions', b:'Prop 14 (AI improves aggregation, η < ηcrit): exponential-decay upper bound on effort implies I(τA)·ēh → 0 as τA → ∞. Prop 15 (synthetic data): Tarski\'s fixed-point theorem gives existence of extremal steady states; τsyn > 0 makes F(0) > 0 so the least fixed point is strictly positive. Prop 16 (separable effort): same local stability argument with 1/4 → β/4 throughout.' },
+      ].map(({ t, b }, i) => h(AppItem, { key: i, title: t }, b))
+    ),
+
+    h('div', { className: 'footer' },
+      'Acemoglu, Kong & Ozdaglar · NBER WP 34910 · February 2026 · Standalone interactive reader'
+    )
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(h(App));
+</script>
+</body>
+</html>
