@@ -195,6 +195,27 @@ details.ap .box-body{border-color:var(--border);font-size:14px;color:var(--text2
 </details>
 </div>
 
+<div id="cl-diag" style="margin-top:2rem;margin-bottom:0">
+<div class="lbl">Diagram 2 &middot; The mechanism</div>
+<h2>The feedback loop, visualised</h2>
+<p>This is Observation 1 as a picture. The green virtuous cycle is what sustains a knowledge commons. The amber arrow is what agentic AI disrupts. Understanding this diagram makes everything in Sections 3&#8211;4 intuitive before any equations.</p>
+
+<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--rl);padding:1rem 1.2rem;margin:1.2rem 0">
+  <div class="lbl" style="margin-bottom:8px">Causal structure</div>
+  <canvas id="clCanvas" style="width:100%;display:block;border-radius:4px"></canvas>
+</div>
+
+<details class="cs">
+  <summary><span class="arr">&#9658;</span>&nbsp;CS translation &middot; How to read this diagram</summary>
+  <div class="box-body">
+    <p><strong>The green loop</strong> is a positive feedback cycle: more knowledge X makes learning effort more rewarding (complement), effort generates community signal, signal accumulates back into X. A self-reinforcing knowledge commons &#8212; the open source / Wikipedia / Stack Overflow dynamic when it works.</p>
+    <p><strong>The amber arrow</strong> is the disruption: agentic AI precision &#964;A provides personalised recommendations that substitute for individual effort. When AI answers your question, you don&#8217;t develop the knowledge yourself &#8212; and you don&#8217;t contribute to the community signal. The private incentive is gone; the public good byproduct disappears with it.</p>
+    <p><strong>Aggregation I</strong> scales all three green arrows simultaneously &#8212; it makes the same individual effort produce more community signal. This is why Wikipedia, GitHub, Stack Overflow (when they function) are so valuable: they amplify the entire virtuous cycle. And why their decline is so costly: the amplifier is failing.</p>
+    <p>The paper&#8217;s Observation 1 is precisely the formal statement that the amber arrow has negative sign (substitute: &#8706;&#178;U/&#8706;e&#8706;&#964;A &lt; 0) while the X&#8594;effort link has positive sign (complement: &#8706;&#178;U/&#8706;e&#8706;X &gt; 0).</p>
+  </div>
+</details>
+</div>
+
 <hr>
 
 <!-- SECTION 2 -->
@@ -396,12 +417,12 @@ details.ap .box-body{border-color:var(--border);font-size:14px;color:var(--text2
 <div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--rl);padding:1rem 1.2rem;margin:1.2rem 0">
   <div style="display:flex;flex-wrap:wrap;gap:0 2rem;margin-bottom:1rem">
     <div style="flex:1;min-width:200px;margin-bottom:8px">
-      <div style="font-family:var(--mono);font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">AI precision &tau;<sub>A</sub> &nbsp;<span id="tA-val" style="color:var(--text);font-weight:600">0.0</span></div>
-      <input type="range" id="tA-slider" min="0" max="400" value="0" step="1" style="width:100%">
+      <div style="font-family:var(--mono);font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">AI precision &tau;<sub>A</sub> &nbsp;<span id="tA-val" style="color:var(--text);font-weight:600">0.20</span></div>
+      <input type="range" id="tA-slider" min="0" max="36" value="20" step="1" style="width:100%">
     </div>
     <div style="flex:1;min-width:200px;margin-bottom:8px">
-      <div style="font-family:var(--mono);font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">Aggregation capacity I &nbsp;<span id="I-val" style="color:var(--text);font-weight:600">1.0</span></div>
-      <input type="range" id="I-slider" min="50" max="400" value="100" step="1" style="width:100%">
+      <div style="font-family:var(--mono);font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">Aggregation capacity I &nbsp;<span id="I-val" style="color:var(--text);font-weight:600">2.0</span></div>
+      <input type="range" id="I-slider" min="50" max="400" value="200" step="1" style="width:100%">
     </div>
   </div>
 
@@ -484,6 +505,21 @@ details.ap .box-body{border-color:var(--border);font-size:14px;color:var(--text2
     <li>Both thresholds grow as O(log I) in aggregation capacity &#8212; logarithmically. To double the collapse threshold, you need to roughly square the aggregation capacity.</li>
     <li>The welfare optimum stays at fraction 1/&#945; below the collapse boundary, regardless of how large I gets.</li>
   </ul>
+</div>
+
+<div id="wf-diag" style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--rl);padding:1rem 1.2rem;margin:1.6rem 0">
+  <div class="lbl" style="margin-bottom:10px">Diagram 3 &middot; Welfare vs AI precision &mdash; the non-monotone curve</div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
+    <div style="font-family:var(--mono);font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap">Aggregation I &nbsp;<span id="wf-I-val" style="color:var(--text);font-weight:600">3.0</span></div>
+    <input type="range" id="wf-I-slider" min="50" max="400" value="200" step="1" style="flex:1">
+  </div>
+  <canvas id="wfCanvas" style="width:100%;display:block;border-radius:4px"></canvas>
+  <div style="display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px">
+    <div style="display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--text2)"><span style="width:24px;height:2px;background:#4a90d9;display:inline-block;border-radius:1px"></span>Steady-state welfare</div>
+    <div style="display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--text2)"><span style="width:14px;height:14px;border-left:2px solid #266b0d;display:inline-block"></span>&#964;*A (welfare peak)</div>
+    <div style="display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--text2)"><span style="width:14px;height:14px;border-left:2px dashed #e05c2a;display:inline-block"></span>&#964;&#x1d9c;A (collapse threshold)</div>
+  </div>
+  <div id="wf-caption" style="font-family:var(--mono);font-size:11px;color:var(--text2);margin-top:10px;line-height:1.5;min-height:2.5em;padding:8px 10px;background:var(--bg3);border-radius:4px"></div>
 </div>
 
 <details class="cs">
@@ -728,74 +764,58 @@ details.ap .box-body{border-color:var(--border);font-size:14px;color:var(--text2
 </div>
 
 <script>
+// ── Shared model ──
+// alpha-1=0.15 (collapse regime). Calibrated so crossings appear in [0,1.5].
+// tA=0: Xm~0.004 (invisible), Xh~1.1. tA=0.20: Xm~0.07, Xh~0.84. tA=0.33: bifurcation. tA=0.36: collapse.
+var _P={AL:1.15,SIG2:0.5,LG:5.0,LI:2.5,S2:0.1,DX:0.90,DG:0.10,XMAX:1.6};
+function _phi(x){return Math.exp(-0.5*x*x)/2.5066282746;}
+function _Phi(x){var t=1/(1+0.2316419*Math.abs(x));var p=t*(0.31938153+t*(-0.35656378+t*(1.78147794+t*(-1.82125598+t*1.33027443))));var d=_phi(x)*p;return x>=0?1-d:d;}
+function _G(tau){if(tau<=0)return 0;return 2*_Phi(Math.sqrt(tau))-1;}
+function _g(tau){if(tau<1e-10)return 0;return _phi(Math.sqrt(tau))/Math.sqrt(tau);}
+function _bestE(X,tA){
+  var am1=_P.AL-1,GX=_G(X);
+  if(GX<1e-10)return 0;
+  if(_P.DX*GX*_P.LI*_g(_P.S2+tA)<=0)return 0;
+  var lo=0,hi=0.5;
+  for(var k=0;k<20;k++){if(_P.DX*GX*_P.LI*_g(_P.S2+_P.LI*hi+tA)-Math.pow(hi,am1)<0)break;hi*=2;}
+  for(var i=0;i<55;i++){var m=(lo+hi)/2;(_P.DX*GX*_P.LI*_g(_P.S2+_P.LI*m+tA)-Math.pow(m,am1)>0)?lo=m:hi=m;}
+  return(lo+hi)/2;
+}
+function _F(X,tA,I){if(X<0)X=0;var e=_bestE(X,tA),inn=X+_P.LG*I*e;return inn>1e-10?1/(_P.SIG2+1/inn):0;}
+function _highFP(tA,I){
+  var N=120,best=null;
+  var prev={x:0,d:_F(0,tA,I)-0};
+  for(var i=1;i<=N;i++){
+    var x=_P.XMAX*i/N,fx=_F(x,tA,I),d=fx-x;
+    if(prev.d*d<0&&prev.x>0.02){
+      var lo=prev.x,hi=x;
+      for(var k=0;k<40;k++){var m=(lo+hi)/2;(_F(lo,tA,I)-lo)*(_F(m,tA,I)-m)<0?hi=m:lo=m;}
+      var xfp=(lo+hi)/2,dv=0.1;
+      if((_F(xfp+dv,tA,I)-_F(xfp-dv,tA,I))/(2*dv)<1)best=xfp;
+    }
+    prev={x:x,d:d};
+  }
+  return best;
+}
+function _welfare(tA,I){
+  var Xh=_highFP(tA,I);
+  if(!Xh||Xh<0.05)return 0;
+  var eh=_bestE(Xh,tA),Yh=_P.S2+_P.LI*eh+tA;
+  var w=_G(Xh)*_P.DG+_G(Xh)*_G(Yh)*_P.DX-(1/_P.AL)*Math.pow(eh,_P.AL);
+  return Math.max(0,w);
+}
+
+// ── Diagram 1: F(X) transition map ──
 (function(){
-  // ── Model parameters (fixed) ──
-  // alpha-1 = 0.18 < 0.25: we're in the collapse-possible regime
-  var ALPHA = 1.18;
-  var SIGMA2 = 0.35;   // knowledge drift variance
-  var LG = 2.5;        // public learning productivity
-  var LI = 1.0;        // private learning productivity
-  var S2INV = 0.4;     // prior precision on idiosyncratic state (sigma^-2)
-  var DX = 0.92;       // complementarity gain
-  var XMAX = 1.0 / SIGMA2;  // upper bound on precision = Sigma^-2
+  var ALPHA = _P.AL;
+  var SIGMA2 = _P.SIG2;
+  var LG = _P.LG;
+  var LI = _P.LI;
+  var S2INV = _P.S2;
+  var DX = _P.DX;
+  var XMAX = _P.XMAX;
 
-  // ── Normal distribution helpers ──
-  function phi(x){ return Math.exp(-0.5*x*x)/Math.sqrt(2*Math.PI); }
-  function Phi(x){
-    var t=1/(1+0.2316419*Math.abs(x));
-    var p=t*(0.319381530+t*(-0.356563782+t*(1.781477937+t*(-1.821255978+t*1.330274429))));
-    var d=phi(x)*p;
-    return x>=0?1-d:d;
-  }
-  // G(tau) = P(|Z|<=1), Z~N(0,1/tau)
-  function G(tau){
-    if(tau<=0)return 0;
-    var s=Math.sqrt(tau);
-    return 2*Phi(s)-1;
-  }
-  // g(tau) = G'(tau) = phi(sqrt(tau))/sqrt(tau)
-  function g(tau){
-    if(tau<=1e-9)return 0;
-    var s=Math.sqrt(tau);
-    return phi(s)/s;
-  }
-
-  // ── Best-response effort: solve DX*G(X)*LI*g(S2INV+LI*e+tA) = e^(alpha-1) ──
-  function bestEffort(X, tA){
-    var GX=G(X);
-    if(GX<1e-10)return 0;
-    var am1=ALPHA-1;
-    // check if any effort is worthwhile: f(0+) = DX*GX*LI*g(S2INV+tA)
-    var fZero=DX*GX*LI*g(S2INV+tA);
-    if(fZero<=0)return 0;
-    // bisection on f(e) = DX*GX*LI*g(S2INV+LI*e+tA) - e^(am1)
-    var lo=0, hi=2.0;
-    // expand hi until f(hi)<0
-    for(var k=0;k<20;k++){
-      var fHi=DX*GX*LI*g(S2INV+LI*hi+tA)-Math.pow(hi,am1);
-      if(fHi<0)break;
-      hi*=2;
-    }
-    var fLo=DX*GX*LI*g(S2INV+LI*lo+tA)-Math.pow(lo+1e-9,am1);
-    if(fLo<=0)return 0;
-    for(var i=0;i<60;i++){
-      var mid=(lo+hi)/2;
-      var fMid=DX*GX*LI*g(S2INV+LI*mid+tA)-Math.pow(mid,am1);
-      if(fMid>0)lo=mid;else hi=mid;
-    }
-    return (lo+hi)/2;
-  }
-
-  // ── State transition map F(X) ──
-  function F(X, tA, I){
-    if(X<0)X=0;
-    var e=bestEffort(X,tA);
-    var inner=X+LG*I*e;
-    if(inner<=1e-10)return 0;
-    return 1/(SIGMA2+1/inner);
-  }
-
-  // ── Canvas drawing ──
+  // ── Canvas ──
   var canvas=document.getElementById('fxCanvas');
   var ctx=canvas.getContext('2d');
   var tASlider=document.getElementById('tA-slider');
@@ -809,12 +829,11 @@ details.ap .box-body{border-color:var(--border);font-size:14px;color:var(--text2
   }
 
   function draw(){
-    var W=canvas.width, H=canvas.height;
+    var W=canvas.offsetWidth||640, H=340;
     var tA=parseFloat(tASlider.value)/100;
     var I=parseFloat(ISlider.value)/100;
-    tAVal.textContent=tA.toFixed(1);
+    tAVal.textContent=tA.toFixed(2);
     IVal.textContent=I.toFixed(1);
-
     var dark=isDark();
     var bgCol=dark?'#252422':'#f2f0ec';
     var gridCol=dark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
@@ -827,217 +846,365 @@ details.ap .box-body{border-color:var(--border);font-size:14px;color:var(--text2
     var labelCol=dark?'#706d68':'#8a8784';
     var basinCollapse=dark?'rgba(224,92,42,0.10)':'rgba(224,92,42,0.07)';
     var basinHigh=dark?'rgba(74,144,217,0.10)':'rgba(74,144,217,0.07)';
-
-    // margins
-    var ml=48, mr=16, mt=16, mb=42;
+    var ml=52, mr=16, mt=20, mb=44;
     var pw=W-ml-mr, ph=H-mt-mb;
-
-    // coordinate helpers
-    var XLO=0, XHI=XMAX*1.05;
-    function toCanvasX(x){ return ml+((x-XLO)/(XHI-XLO))*pw; }
-    function toCanvasY(y){ var yc=Math.min(y,XHI*1.05); return mt+ph-(yc/(XHI*1.05))*ph; }
-
-    ctx.clearRect(0,0,W,H);
-    ctx.fillStyle=bgCol;
-    ctx.fillRect(0,0,W,H);
-
+    // Display 0..1.6. Ceiling=2.0 is off-screen intentionally.
+    var XDISP=1.6, XHI=1.65;
+    function toCanvasX(x){ return ml+x/XHI*pw; }
+    function toCanvasY(y){ return mt+ph-Math.min(y,XHI)/XHI*ph; }
+    ctx.clearRect(0,0,W,H); ctx.fillStyle=bgCol; ctx.fillRect(0,0,W,H);
     // grid
-    ctx.strokeStyle=gridCol;
-    ctx.lineWidth=1;
-    var ticks=[0.5,1.0,1.5,2.0,2.5];
+    var ticks=[0.25,0.5,0.75,1.0,1.25,1.5];
+    ctx.strokeStyle=gridCol; ctx.lineWidth=1;
     ticks.forEach(function(v){
       if(v>XHI)return;
-      var cx=toCanvasX(v);
-      ctx.beginPath();ctx.moveTo(cx,mt);ctx.lineTo(cx,mt+ph);ctx.stroke();
-      var cy=toCanvasY(v);
-      ctx.beginPath();ctx.moveTo(ml,cy);ctx.lineTo(ml+pw,cy);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(toCanvasX(v),mt);ctx.lineTo(toCanvasX(v),mt+ph);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(ml,toCanvasY(v));ctx.lineTo(ml+pw,toCanvasY(v));ctx.stroke();
     });
-
-    // compute F(X) over a grid of points
-    var N=180;
+    // Ultra-dense near zero to catch Xm (can be as small as 0.004 at tA=0)
     var pts=[];
-    for(var i=0;i<=N;i++){
-      var x=XLO+(XHI-XLO)*i/N;
-      var fx=F(x,tA,I);
-      pts.push({x:x,fx:fx});
-    }
-
-    // find fixed points (sign changes of F(x)-x)
+    for(var i=0;i<=400;i++){var x=0.15*i/400;pts.push({x:x,fx:_F(x,tA,I)});}
+    for(var i=1;i<=200;i++){var x=0.15+XHI*0.85*i/200;pts.push({x:x,fx:_F(x,tA,I)});}
+    // find sign changes (fixed points)
     var fixedPts=[];
     for(var j=1;j<pts.length;j++){
-      var d0=pts[j-1].fx-pts[j-1].x;
-      var d1=pts[j].fx-pts[j].x;
-      if(d0===0){fixedPts.push(pts[j-1].x);continue;}
-      if(d0*d1<0){
-        // linear interpolation
-        var x0=pts[j-1].x,x1=pts[j].x;
-        var f0=d0,f1=d1;
-        var xstar=x0-f0*(x1-x0)/(f1-f0);
-        fixedPts.push(xstar);
-      }
+      var d0=pts[j-1].fx-pts[j-1].x,d1=pts[j].fx-pts[j].x;
+      if(d0*d1<0){var x0=pts[j-1].x,x1=pts[j].x,f0=d0,f1=d1;fixedPts.push(x0-f0*(x1-x0)/(f1-f0));}
     }
-    // classify: stable if slope of F-Id < 0 at crossing (i.e. F'(x)<1)
-    // estimate numerically
-    var dx=0.005;
-    function stability(xfp){
-      var fp1=F(xfp+dx,tA,I), fp0=F(xfp-dx,tA,I);
-      var slope=(fp1-fp0)/(2*dx);
-      return slope<1?'stable':'unstable';
-    }
-
-    // shade basins of attraction
-    var stableFPs=fixedPts.filter(function(xfp){ return xfp>0.001 && stability(xfp)==='stable'; });
-    var unstableFPs=fixedPts.filter(function(xfp){ return xfp>0.001 && stability(xfp)==='unstable'; });
-
+    var dxs=0.012;
+    function stability(xfp){return(_F(xfp+dxs,tA,I)-_F(xfp-dxs,tA,I))/(2*dxs)<1?'stable':'unstable';}
+    var stableFPs=fixedPts.filter(function(x){return x>0.002&&stability(x)==='stable';});
+    var unstableFPs=fixedPts.filter(function(x){return x>0.002&&stability(x)==='unstable';});
+    // shade basins
     if(unstableFPs.length>0){
-      // basin of collapse: x < Xm
-      var Xm=unstableFPs[0];
-      ctx.fillStyle=basinCollapse;
-      ctx.fillRect(toCanvasX(XLO),mt,toCanvasX(Xm)-toCanvasX(XLO),ph);
-      // basin of high state: x > Xm
-      ctx.fillStyle=basinHigh;
-      ctx.fillRect(toCanvasX(Xm),mt,toCanvasX(XHI)-toCanvasX(Xm),ph);
+      ctx.fillStyle=basinCollapse;ctx.fillRect(toCanvasX(0),mt,toCanvasX(unstableFPs[0])-toCanvasX(0),ph);
+      ctx.fillStyle=basinHigh;ctx.fillRect(toCanvasX(unstableFPs[0]),mt,toCanvasX(XHI)-toCanvasX(unstableFPs[0]),ph);
     }
-
-    // 45-degree line
-    ctx.beginPath();
-    ctx.strokeStyle=lineCol45;
-    ctx.lineWidth=1.5;
-    ctx.setLineDash([6,4]);
-    ctx.moveTo(toCanvasX(XLO),toCanvasY(XLO));
-    ctx.lineTo(toCanvasX(XHI*0.95),toCanvasY(XHI*0.95));
-    ctx.stroke();
-    ctx.setLineDash([]);
-
+    // 45° line
+    ctx.beginPath();ctx.strokeStyle=lineCol45;ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+    ctx.moveTo(toCanvasX(0),toCanvasY(0));ctx.lineTo(toCanvasX(XDISP),toCanvasY(XDISP));ctx.stroke();ctx.setLineDash([]);
     // F(X) curve
-    ctx.beginPath();
-    ctx.strokeStyle=fxCol;
-    ctx.lineWidth=2.5;
-    var started=false;
-    pts.forEach(function(p){
-      var cx=toCanvasX(p.x), cy=toCanvasY(p.fx);
-      if(!started){ctx.moveTo(cx,cy);started=true;}
-      else ctx.lineTo(cx,cy);
-    });
+    ctx.beginPath();ctx.strokeStyle=fxCol;ctx.lineWidth=2.5;var started=false;
+    pts.forEach(function(p){var cx=toCanvasX(p.x),cy=toCanvasY(p.fx);if(!started){ctx.moveTo(cx,cy);started=true;}else ctx.lineTo(cx,cy);});
     ctx.stroke();
-
     // axes
-    ctx.strokeStyle=axisCol;
-    ctx.lineWidth=1;
+    ctx.strokeStyle=axisCol;ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(ml,mt);ctx.lineTo(ml,mt+ph);ctx.stroke();
     ctx.beginPath();ctx.moveTo(ml,mt+ph);ctx.lineTo(ml+pw,mt+ph);ctx.stroke();
-
     // tick labels
-    ctx.fillStyle=labelCol;
-    ctx.font='11px Menlo,Monaco,Consolas,monospace';
-    ctx.textAlign='center';
-    ticks.forEach(function(v){
-      if(v>XHI)return;
-      ctx.fillText(v.toFixed(1),toCanvasX(v),mt+ph+16);
-    });
-    ctx.textAlign='right';
-    ticks.forEach(function(v){
-      if(v>XHI)return;
-      ctx.fillText(v.toFixed(1),ml-5,toCanvasY(v)+4);
-    });
-
-    // axis labels
-    ctx.fillStyle=textCol;
-    ctx.font='12px Menlo,Monaco,Consolas,monospace';
-    ctx.textAlign='center';
+    ctx.fillStyle=labelCol;ctx.font='11px Menlo,Monaco,Consolas,monospace';ctx.textAlign='center';
+    ticks.forEach(function(v){ctx.fillText(v.toFixed(2),toCanvasX(v),mt+ph+16);});
+    ctx.textAlign='right';ticks.forEach(function(v){ctx.fillText(v.toFixed(2),ml-5,toCanvasY(v)+4);});
+    ctx.fillStyle=textCol;ctx.font='12px Menlo,Monaco,Consolas,monospace';ctx.textAlign='center';
     ctx.fillText('X (knowledge stock)',ml+pw/2,H-4);
-    ctx.save();
-    ctx.translate(12,mt+ph/2);
-    ctx.rotate(-Math.PI/2);
-    ctx.fillText('F(X) (next period)',0,0);
-    ctx.restore();
-
-    // Sigma^-2 reference line
-    ctx.strokeStyle=dark?'rgba(255,255,255,0.12)':'rgba(0,0,0,0.12)';
-    ctx.lineWidth=1;
-    ctx.setLineDash([3,3]);
-    var yBound=toCanvasY(XMAX);
-    ctx.beginPath();ctx.moveTo(ml,yBound);ctx.lineTo(ml+pw,yBound);ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle=labelCol;
-    ctx.font='10px Menlo,Monaco,Consolas,monospace';
-    ctx.textAlign='left';
-    ctx.fillText('\u03a3\u207b\u00b2 (ceiling)',ml+4,yBound-4);
-
-    // draw fixed points
+    ctx.save();ctx.translate(13,mt+ph/2);ctx.rotate(-Math.PI/2);ctx.fillText('F(X) (next period)',0,0);ctx.restore();
+    // ceiling is 2.0 — off-screen, note it
+    ctx.fillStyle=labelCol;ctx.font='10px Menlo,Monaco,Consolas,monospace';ctx.textAlign='right';
+    ctx.fillText('\u03a3\u207b\u00b2=2.0 ceiling off-screen \u2192',ml+pw,mt+12);
+    // fixed point dots — 7px so small Xm is visible
     fixedPts.forEach(function(xfp){
-      if(xfp<0.001)return;
-      var stab=stability(xfp);
-      var cx=toCanvasX(xfp), cy=toCanvasY(xfp);
-      ctx.beginPath();
-      ctx.arc(cx,cy,5,0,2*Math.PI);
-      if(stab==='stable'){
-        ctx.fillStyle=stableCol;
-        ctx.fill();
-      } else {
-        ctx.strokeStyle=unstableStroke;
-        ctx.lineWidth=2;
-        ctx.stroke();
-      }
+      if(xfp<0.002||xfp>XHI)return;
+      var s=stability(xfp),cx=toCanvasX(xfp),cy=toCanvasY(xfp);
+      ctx.beginPath();ctx.arc(cx,cy,7,0,2*Math.PI);
+      if(s==='stable'){ctx.fillStyle=stableCol;ctx.fill();}
+      else{ctx.strokeStyle=unstableStroke;ctx.lineWidth=2.5;ctx.stroke();}
     });
-
-    // zero fixed point (always stable in collapse regime)
-    ctx.beginPath();
-    ctx.arc(toCanvasX(0.0),toCanvasY(0.0),5,0,2*Math.PI);
-    ctx.fillStyle=stableCol;
-    ctx.fill();
-
-    // label fixed points
-    ctx.font='11px Menlo,Monaco,Consolas,monospace';
-    ctx.textAlign='center';
-    ctx.fillStyle=textCol;
-    if(fixedPts.length===0 || (fixedPts.length===1 && fixedPts[0]<0.01)){
-      // only zero FP
-    }
-    stableFPs.forEach(function(xfp,idx){
-      var cx=toCanvasX(xfp), cy=toCanvasY(xfp);
-      ctx.fillStyle=stableCol;
-      ctx.fillText('\u1d8b\u0304h',cx,cy-10);
-    });
-    unstableFPs.forEach(function(xfp){
-      var cx=toCanvasX(xfp), cy=toCanvasY(xfp);
-      ctx.fillStyle=unstableStroke;
-      ctx.fillText('\u1d8b\u0304m',cx,cy-10);
-    });
-
+    // X=0 stable dot
+    ctx.beginPath();ctx.arc(toCanvasX(0),toCanvasY(0),7,0,2*Math.PI);ctx.fillStyle=stableCol;ctx.fill();
+    // labels
+    ctx.font='12px Menlo,Monaco,Consolas,monospace';ctx.textAlign='center';
+    stableFPs.forEach(function(x){if(x>0.002&&x<XHI){ctx.fillStyle=stableCol;ctx.fillText('X\u0305h',toCanvasX(x),toCanvasY(x)-14);}});
+    unstableFPs.forEach(function(x){if(x>0.002&&x<XHI){ctx.fillStyle=unstableStroke;ctx.fillText('X\u0305m',toCanvasX(x),toCanvasY(x)-14);}});
     // caption
-    var nPos=stableFPs.length;
-    var nUnstable=unstableFPs.length;
     var msg='';
-    if(nPos===0){
-      msg='\u26a0\ufe0f Complete collapse: F(X) < X for all X > 0. The only steady state is zero general knowledge. The economy converges here from any starting point.';
-    } else if(nUnstable>0){
-      var xm=unstableFPs[0].toFixed(2);
-      msg='Multiple steady states. Basin boundary at X\u0305m \u2248 '+xm+'. Starting above \u2192 converges to high knowledge. Starting below \u2192 collapses to zero. Try increasing \u03c4A to push X\u0305m and X\u0305h together.';
+    if(stableFPs.length===0){
+      msg='\u26a0 Complete collapse: F(X) below the 45\u00b0 line everywhere. [\u03c4A\u1d9c\u22480.33 at I=2.0 — reduce \u03c4A or increase I]';
+    } else if(unstableFPs.length>0){
+      msg='Three equilibria. Red (X < X\u0305m\u2248'+unstableFPs[0].toFixed(3)+'): collapses to zero. Blue: converges to X\u0305h\u2248'+stableFPs[stableFPs.length-1].toFixed(2)+'. Drag \u03c4A \u2192 watch X\u0305m and X\u0305h approach, collide at \u03c4A\u22480.33, then only zero survives.';
     } else {
-      msg='Unique stable equilibrium X\u0305h. Any positive knowledge stock self-corrects here. Knowledge collapse steady state (X=0) is unstable \u2014 a knife-edge that cannot persist.';
+      msg='One stable equilibrium X\u0305h\u2248'+stableFPs[0].toFixed(2)+'. Collapse basin (X<~0.005) near-zero here. Drag \u03c4A \u2192 to make X\u0305m visible and watch it grow toward X\u0305h.';
     }
     caption.textContent=msg;
   }
 
-  tASlider.addEventListener('input',draw);
-  ISlider.addEventListener('input',draw);
-  if(window.matchMedia){
-    window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',draw);
+  var _fxReady=false;
+  tASlider.addEventListener('input',function(){if(_fxReady)draw();});
+  ISlider.addEventListener('input',function(){if(_fxReady)draw();});
+  if(window.matchMedia)window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function(){if(_fxReady)draw();});
+  function initFX(){
+    var dpr=window.devicePixelRatio||1,r=canvas.getBoundingClientRect();
+    if(r.width>0){
+      canvas.width=Math.round(r.width*dpr);
+      canvas.height=340*dpr;
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      _fxReady=true;
+      draw();
+    }
+  }
+  window.addEventListener('load',function(){initFX();window.addEventListener('resize',initFX);});
+})();
+
+// ── Diagram 2: Causal loop ──
+(function(){
+  var canvas=document.getElementById('clCanvas');
+  if(!canvas)return;
+  var ctx=canvas.getContext('2d');
+  function isDark(){return window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches;}
+
+  function drawArrow(x1,y1,x2,y2,col,lw,dash){
+    ctx.beginPath();ctx.strokeStyle=col;ctx.lineWidth=lw||2;
+    if(dash)ctx.setLineDash(dash);else ctx.setLineDash([]);
+    ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.setLineDash([]);
+    var a=Math.atan2(y2-y1,x2-x1),s=10;
+    ctx.beginPath();ctx.fillStyle=col;
+    ctx.moveTo(x2,y2);
+    ctx.lineTo(x2-s*Math.cos(a-0.4),y2-s*Math.sin(a-0.4));
+    ctx.lineTo(x2-s*Math.cos(a+0.4),y2-s*Math.sin(a+0.4));
+    ctx.closePath();ctx.fill();
   }
 
-  // handle canvas resolution for retina
-  (function scaleCanvas(){
-    var dpr=window.devicePixelRatio||1;
-    var rect=canvas.getBoundingClientRect();
-    if(rect.width>0){
-      canvas.width=Math.round(rect.width*dpr);
-      canvas.height=340*dpr;
-      ctx.scale(dpr,dpr);
-    }
-  })();
+  function drawCurvedArrow(x1,y1,cpx,cpy,x2,y2,col,lw){
+    ctx.beginPath();ctx.strokeStyle=col;ctx.lineWidth=lw||2;ctx.setLineDash([]);
+    ctx.moveTo(x1,y1);ctx.quadraticCurveTo(cpx,cpy,x2,y2);ctx.stroke();
+    var dx=x2-cpx,dy=y2-cpy,a=Math.atan2(dy,dx),s=10;
+    ctx.beginPath();ctx.fillStyle=col;
+    ctx.moveTo(x2,y2);
+    ctx.lineTo(x2-s*Math.cos(a-0.4),y2-s*Math.sin(a-0.4));
+    ctx.lineTo(x2-s*Math.cos(a+0.4),y2-s*Math.sin(a+0.4));
+    ctx.closePath();ctx.fill();
+  }
 
-  draw();
+  function roundRect(x,y,w,h,r,fill,stroke,lw){
+    ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+    ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+    ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+    if(fill){ctx.fillStyle=fill;ctx.fill();}
+    if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw||1;ctx.stroke();}
+  }
+
+  function label(txt,x,y,col,size,align,base){
+    ctx.fillStyle=col;ctx.font=(size||12)+'px -apple-system,BlinkMacSystemFont,sans-serif';
+    ctx.textAlign=align||'center';ctx.textBaseline=base||'middle';ctx.fillText(txt,x,y);
+  }
+
+  function draw(){
+    var W=canvas.offsetWidth||600, H=canvas.offsetHeight||372;
+    if(W<10||H<10)return;
+    var dark=isDark();
+    var bg=dark?'#252422':'#f2f0ec';
+    var nodeGreenFill=dark?'#0c2a12':'#e6f5d0';
+    var nodeGreenStroke=dark?'#3b8c11':'#5a9e1a';
+    var nodeAmberFill=dark?'#2a1800':'#fff3d6';
+    var nodeAmberStroke=dark?'#b06000':'#c87800';
+    var nodeGrayFill=dark?'#2e2c2a':'#f0eeea';
+    var nodeGrayStroke=dark?'#555350':'#aaa8a4';
+    var textMain=dark?'#f0ede8':'#1a1917';
+    var textSub=dark?'#b8b4ad':'#4a4845';
+    var arrowGreen='#3b8c11';
+    var arrowAmber='#c87800';
+    var arrowRed='#c0392b';
+    var plusCol=dark?'#7cb84a':'#3b6d11';
+    var minusCol='#c87800';
+
+    ctx.clearRect(0,0,W,H);ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+    // Layout — five nodes in a roughly circular arrangement
+    // Centre layout around cx=W/2, cy=H/2
+    var cx=W/2, cy=H*0.50;
+    var rOuter=Math.min(W,H)*0.33;
+    // Node positions
+    var NW=105,NH=46,NR=7;
+    // Top-centre: Community knowledge X
+    var nX={x:cx,y:cy-rOuter,label:'Community knowledge X',sub:'(public precision)',fill:nodeGreenFill,stroke:nodeGreenStroke};
+    // Right: Human effort e
+    var nE={x:cx+rOuter*0.92,y:cy-rOuter*0.10,label:'Human learning effort e',sub:'(private signal)',fill:nodeGreenFill,stroke:nodeGreenStroke};
+    // Bottom-right: Community signal
+    var nS={x:cx+rOuter*0.56,y:cy+rOuter*0.75,label:'Community signal',sub:'(aggregated on island)',fill:nodeGreenFill,stroke:nodeGreenStroke};
+    // Bottom-left: Individual precision Y
+    var nY={x:cx-rOuter*0.56,y:cy+rOuter*0.75,label:'Individual precision Y',sub:'(context-specific)',fill:nodeGreenFill,stroke:nodeGreenStroke};
+    // Left: AI precision τA
+    var nAI={x:cx-rOuter*0.92,y:cy-rOuter*0.10,label:'Agentic AI precision \u03c4\u2090',sub:'(substitute)',fill:nodeAmberFill,stroke:nodeAmberStroke};
+    // Aggregation I (small tag, bottom-centre)
+    var nI={x:cx,y:cy+rOuter*1.02,label:'Aggregation capacity I',sub:'(island size)',fill:nodeGrayFill,stroke:nodeGrayStroke};
+
+    var nodes=[nX,nE,nS,nY,nAI,nI];
+
+    // Draw green cycle arrows first (behind nodes)
+    // X → e (complement: X↑ → e↑)
+    drawCurvedArrow(nX.x+NW*0.38,nX.y+NH*0.5, nX.x+NW*0.6,nX.y+rOuter*0.4, nE.x-NW*0.45,nE.y-NH*0.3, arrowGreen,2.2);
+    // e → S (effort produces community signal)
+    drawCurvedArrow(nE.x-NW*0.10,nE.y+NH*0.5, nE.x+NW*0.0,nE.y+rOuter*0.38, nS.x+NW*0.35,nS.y-NH*0.5, arrowGreen,2.2);
+    // S → X (signal accumulates into knowledge stock)
+    drawCurvedArrow(nS.x-NW*0.35,nS.y-NH*0.5, nS.x-NW*0.5,nS.y-rOuter*0.30, nX.x+NW*0.12,nX.y+NH*0.5, arrowGreen,2.2);
+    // X → Y (via complement: general knowledge makes specific effort more valuable — indirect)
+    drawCurvedArrow(nX.x-NW*0.38,nX.y+NH*0.5, nX.x-NW*0.55,nX.y+rOuter*0.4, nY.x+NW*0.45,nY.y-NH*0.3, arrowGreen,1.5);
+    // e → Y (effort directly raises individual precision)
+    drawCurvedArrow(nE.x-NW*0.42,nE.y+NH*0.4, cx+10,cy+rOuter*0.22, nY.x+NW*0.40,nY.y-NH*0.35, arrowGreen,1.5);
+
+    // AI → e (substitute: τA↑ → e↓) — amber dashed
+    drawCurvedArrow(nAI.x+NW*0.50,nAI.y-NH*0.15, cx-rOuter*0.20,cy-rOuter*0.46, nE.x-NW*0.40,nE.y-NH*0.45, arrowAmber,2.2);
+
+    // I → S (scales community signal — gray)
+    drawArrow(nI.x-NW*0.30,nI.y-NH*0.0, nS.x+NW*0.05,nS.y+NH*0.5, nodeGrayStroke,1.5,[4,3]);
+
+    // Draw nodes on top
+    nodes.forEach(function(n){
+      roundRect(n.x-NW/2,n.y-NH/2,NW,NH,NR,n.fill,n.stroke,1.5);
+      label(n.label,n.x,n.y-5,textMain,11,'center','middle');
+      label(n.sub,n.x,n.y+10,textSub,9.5,'center','middle');
+    });
+
+    // Arrow labels (+ / -)
+    var lsz=13;
+    // X→e: +
+    label('+',cx+rOuter*0.54,cy-rOuter*0.50,plusCol,lsz);
+    // e→S: +
+    label('+',cx+rOuter*0.78,cy+rOuter*0.38,plusCol,lsz);
+    // S→X: +
+    label('+',cx-rOuter*0.08,cy-rOuter*0.68,plusCol,lsz);
+    // AI→e: −
+    label('\u2212',cx-rOuter*0.28,cy-rOuter*0.56,minusCol,lsz);
+    // I→S: +
+    label('+',cx-rOuter*0.10,cy+rOuter*0.94,nodeGrayStroke,lsz);
+
+    // Legend
+    var ly=H-22,lx=12;
+    roundRect(lx,ly-9,10,10,2,nodeGreenFill,nodeGreenStroke,1);
+    label('Virtuous knowledge cycle',lx+16,ly,textSub,10,'left','middle');
+    roundRect(lx+160,ly-9,10,10,2,nodeAmberFill,nodeAmberStroke,1);
+    label('AI substitution effect',lx+176,ly,textSub,10,'left','middle');
+    roundRect(lx+310,ly-9,10,10,2,nodeGrayFill,nodeGrayStroke,1);
+    label('Aggregation lever I (always \u2191 welfare)',lx+326,ly,textSub,10,'left','middle');
+  }
+
+  function initCL(){
+    var dpr=window.devicePixelRatio||1,r=canvas.getBoundingClientRect();
+    if(r.width>0){
+      canvas.width=Math.round(r.width*dpr);
+      canvas.height=Math.round(Math.min(r.width*0.62,420)*dpr);
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      draw();
+    }
+  }
+  if(window.matchMedia)window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',initCL);
+  window.addEventListener('load',function(){initCL();window.addEventListener('resize',initCL);});
+})();
+
+// ── Diagram 3: Welfare curve ──
+(function(){
+  var canvas=document.getElementById('wfCanvas');
+  if(!canvas)return;
+  var ctx=canvas.getContext('2d');
+  var ISlider=document.getElementById('wf-I-slider');
+  var IVal=document.getElementById('wf-I-val');
+  var caption=document.getElementById('wf-caption');
+  function isDark(){return window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches;}
+
+  function draw(){
+    var W=canvas.offsetWidth||640, H=280;
+    if(W<10)return;
+    var I=parseFloat(ISlider.value)/100;
+    IVal.textContent=I.toFixed(1);
+    var dark=isDark();
+    var bgCol=dark?'#252422':'#f2f0ec';
+    var gridCol=dark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
+    var axisCol=dark?'rgba(255,255,255,0.25)':'rgba(0,0,0,0.25)';
+    var curveCol='#4a90d9';
+    var optCol='#266b0d';
+    var collapseCol='#e05c2a';
+    var textCol=dark?'#b8b4ad':'#4a4845';
+    var labelCol=dark?'#706d68':'#8a8784';
+    var ml=52,mr=16,mt=20,mb=44;
+    var pw=W-ml-mr,ph=H-mt-mb;
+    var N=80,tMax=4.0;
+    var wpts=[];
+    for(var i=0;i<=N;i++){var tA=tMax*i/N;wpts.push({tA:tA,w:_welfare(tA,I)});}
+    var wMax=0;
+    wpts.forEach(function(p){if(p.w>wMax)wMax=p.w;});
+    if(wMax<1e-6){caption.textContent='No stable high-knowledge equilibrium at these settings.';return;}
+    var wScale=wMax*1.15;
+    function toX(tA){return ml+tA/tMax*pw;}
+    function toY(w){return mt+ph-Math.max(0,w)/wScale*ph;}
+    ctx.clearRect(0,0,W,H);ctx.fillStyle=bgCol;ctx.fillRect(0,0,W,H);
+    // grid
+    ctx.strokeStyle=gridCol;ctx.lineWidth=1;
+    [1,2,3,4].forEach(function(v){ctx.beginPath();ctx.moveTo(toX(v),mt);ctx.lineTo(toX(v),mt+ph);ctx.stroke();});
+    [0.25,0.5,0.75].forEach(function(f){var y=mt+ph-f*ph;ctx.beginPath();ctx.moveTo(ml,y);ctx.lineTo(ml+pw,y);ctx.stroke();});
+    // find τ* and τᶜ
+    var tStar=0,wStar=0;
+    wpts.forEach(function(p){if(p.w>wStar){wStar=p.w;tStar=p.tA;}});
+    var tCollapse=tMax;
+    for(var j=wpts.length-1;j>=0;j--){if(wpts[j].w>0.002){tCollapse=wpts[j].tA;break;}}
+    // shading
+    ctx.fillStyle=dark?'rgba(74,144,217,0.09)':'rgba(74,144,217,0.07)';
+    ctx.fillRect(toX(0),mt,toX(tStar)-toX(0),ph);
+    ctx.fillStyle=dark?'rgba(200,120,0,0.09)':'rgba(200,120,0,0.07)';
+    ctx.fillRect(toX(tStar),mt,toX(tCollapse)-toX(tStar),ph);
+    if(tCollapse<tMax*0.97){
+      ctx.fillStyle=dark?'rgba(224,92,42,0.10)':'rgba(224,92,42,0.07)';
+      ctx.fillRect(toX(tCollapse),mt,toX(tMax)-toX(tCollapse),ph);
+    }
+    // welfare curve
+    ctx.beginPath();ctx.strokeStyle=curveCol;ctx.lineWidth=2.5;ctx.setLineDash([]);
+    var started=false;
+    wpts.forEach(function(p){
+      if(p.w<=0){started=false;return;}
+      var cx=toX(p.tA),cy=toY(p.w);
+      if(!started){ctx.moveTo(cx,cy);started=true;}else ctx.lineTo(cx,cy);
+    });
+    ctx.stroke();
+    // τ* line
+    ctx.strokeStyle=optCol;ctx.lineWidth=2;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(toX(tStar),mt+6);ctx.lineTo(toX(tStar),mt+ph);ctx.stroke();
+    // τᶜ line
+    if(tCollapse<tMax*0.97){
+      ctx.strokeStyle=collapseCol;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
+      ctx.beginPath();ctx.moveTo(toX(tCollapse),mt+6);ctx.lineTo(toX(tCollapse),mt+ph);ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    // peak dot
+    ctx.beginPath();ctx.arc(toX(tStar),toY(wStar),5,0,2*Math.PI);ctx.fillStyle=optCol;ctx.fill();
+    // axes
+    ctx.strokeStyle=axisCol;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(ml,mt);ctx.lineTo(ml,mt+ph);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(ml,mt+ph);ctx.lineTo(ml+pw,mt+ph);ctx.stroke();
+    // tick labels
+    ctx.fillStyle=labelCol;ctx.font='11px Menlo,Monaco,Consolas,monospace';ctx.textAlign='center';
+    [1,2,3,4].forEach(function(v){ctx.fillText(v,toX(v),mt+ph+16);});
+    ctx.fillStyle=textCol;ctx.font='12px Menlo,Monaco,Consolas,monospace';ctx.textAlign='center';
+    ctx.fillText('AI precision \u03c4\u2090',ml+pw/2,H-4);
+    ctx.save();ctx.translate(13,mt+ph/2);ctx.rotate(-Math.PI/2);ctx.fillText('Welfare \u016a\u207a',0,0);ctx.restore();
+    // threshold labels
+    ctx.font='10px Menlo,Monaco,Consolas,monospace';ctx.textAlign='center';
+    ctx.fillStyle=optCol;ctx.fillText('\u03c4*\u2090\u2248'+tStar.toFixed(2),toX(tStar),mt+4);
+    if(tCollapse<tMax*0.97){ctx.fillStyle=collapseCol;ctx.fillText('\u03c4\u1d9c\u2090\u2248'+tCollapse.toFixed(2),toX(tCollapse),mt+4);}
+    // zone labels
+    ctx.fillStyle=dark?'rgba(74,144,217,0.7)':'rgba(30,90,160,0.6)';
+    if(tStar>0.25)ctx.fillText('AI helps',toX(tStar/2),mt+15);
+    ctx.fillStyle=dark?'rgba(200,120,0,0.7)':'rgba(150,80,0,0.6)';
+    if(tCollapse-tStar>0.3)ctx.fillText('AI harms',toX((tStar+tCollapse)/2),mt+15);
+    ctx.fillStyle=dark?'rgba(224,92,42,0.7)':'rgba(180,60,20,0.6)';
+    if(tMax-tCollapse>0.2)ctx.fillText('collapse',toX((tCollapse+tMax)/2),mt+15);
+    // caption
+    var ratio=tCollapse>0.05?(tStar/tCollapse).toFixed(2):'\u2014';
+    caption.textContent='Welfare peaks at \u03c4*\u2090\u2248'+tStar.toFixed(2)+' then falls. Collapse at \u03c4\u1d9c\u2090\u2248'+tCollapse.toFixed(2)+'. Ratio \u03c4*/\u03c4\u1d9c\u2248'+ratio+' (theory: approaches 1/\u03b1\u22480.87 as I\u2192\u221e). Drag I \u2191 to watch both thresholds grow \u2014 but only logarithmically.';
+  }
+
+  var _wfReady=false;
+  ISlider.addEventListener('input',function(){if(_wfReady)draw();});
+  if(window.matchMedia)window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function(){if(_wfReady)initWF();});
+  function initWF(){
+    var dpr=window.devicePixelRatio||1,r=canvas.getBoundingClientRect();
+    if(r.width>0){
+      canvas.width=Math.round(r.width*dpr);
+      canvas.height=280*dpr;
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      _wfReady=true;
+      draw();
+    }
+  }
+  window.addEventListener('load',function(){initWF();window.addEventListener('resize',initWF);});
 })();
 </script>
 </body>
