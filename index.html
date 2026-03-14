@@ -1117,9 +1117,16 @@ function _welfare(tA,I){
     var labelCol=dark?'#706d68':'#8a8784';
     var ml=52,mr=16,mt=20,mb=44;
     var pw=W-ml-mr,ph=H-mt-mb;
-    var N=80,tMax=4.0;
+    // First pass: find collapse threshold with a coarse scan to set tMax dynamically
+    var N=80,tMaxScan=2.0;
+    var scanPts=[];
+    for(var i=0;i<=N;i++){var tA=tMaxScan*i/N;scanPts.push({tA:tA,w:_welfare(tA,I)});}
+    var tCollapseEst=tMaxScan;
+    for(var j=scanPts.length-1;j>=0;j--){if(scanPts[j].w>0.002){tCollapseEst=scanPts[j].tA;break;}}
+    // Set tMax so the curve (0..tCollapse) fills ~65% of chart width
+    var tMax=Math.max(tCollapseEst*1.55,0.5);
     var wpts=[];
-    for(var i=0;i<=N;i++){var tA=tMax*i/N;wpts.push({tA:tA,w:_welfare(tA,I)});}
+    for(var i=0;i<=120;i++){var tA=tMax*i/120;wpts.push({tA:tA,w:_welfare(tA,I)});}
     var wMax=0;
     wpts.forEach(function(p){if(p.w>wMax)wMax=p.w;});
     if(wMax<1e-6){caption.textContent='No stable high-knowledge equilibrium at these settings.';return;}
@@ -1127,9 +1134,11 @@ function _welfare(tA,I){
     function toX(tA){return ml+tA/tMax*pw;}
     function toY(w){return mt+ph-Math.max(0,w)/wScale*ph;}
     ctx.clearRect(0,0,W,H);ctx.fillStyle=bgCol;ctx.fillRect(0,0,W,H);
-    // grid
+    // grid — 5 evenly spaced ticks
     ctx.strokeStyle=gridCol;ctx.lineWidth=1;
-    [1,2,3,4].forEach(function(v){ctx.beginPath();ctx.moveTo(toX(v),mt);ctx.lineTo(toX(v),mt+ph);ctx.stroke();});
+    var tickStep=tMax/5, gridTicks=[];
+    for(var k=1;k<=5;k++) gridTicks.push(parseFloat((tickStep*k).toFixed(2)));
+    gridTicks.forEach(function(v){ctx.beginPath();ctx.moveTo(toX(v),mt);ctx.lineTo(toX(v),mt+ph);ctx.stroke();});
     [0.25,0.5,0.75].forEach(function(f){var y=mt+ph-f*ph;ctx.beginPath();ctx.moveTo(ml,y);ctx.lineTo(ml+pw,y);ctx.stroke();});
     // find τ* and τᶜ
     var tStar=0,wStar=0;
@@ -1141,10 +1150,8 @@ function _welfare(tA,I){
     ctx.fillRect(toX(0),mt,toX(tStar)-toX(0),ph);
     ctx.fillStyle=dark?'rgba(200,120,0,0.09)':'rgba(200,120,0,0.07)';
     ctx.fillRect(toX(tStar),mt,toX(tCollapse)-toX(tStar),ph);
-    if(tCollapse<tMax*0.97){
-      ctx.fillStyle=dark?'rgba(224,92,42,0.10)':'rgba(224,92,42,0.07)';
-      ctx.fillRect(toX(tCollapse),mt,toX(tMax)-toX(tCollapse),ph);
-    }
+    ctx.fillStyle=dark?'rgba(224,92,42,0.10)':'rgba(224,92,42,0.07)';
+    ctx.fillRect(toX(tCollapse),mt,toX(tMax)-toX(tCollapse),ph);
     // welfare curve
     ctx.beginPath();ctx.strokeStyle=curveCol;ctx.lineWidth=2.5;ctx.setLineDash([]);
     var started=false;
@@ -1158,11 +1165,9 @@ function _welfare(tA,I){
     ctx.strokeStyle=optCol;ctx.lineWidth=2;ctx.setLineDash([]);
     ctx.beginPath();ctx.moveTo(toX(tStar),mt+6);ctx.lineTo(toX(tStar),mt+ph);ctx.stroke();
     // τᶜ line
-    if(tCollapse<tMax*0.97){
-      ctx.strokeStyle=collapseCol;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
-      ctx.beginPath();ctx.moveTo(toX(tCollapse),mt+6);ctx.lineTo(toX(tCollapse),mt+ph);ctx.stroke();
-      ctx.setLineDash([]);
-    }
+    ctx.strokeStyle=collapseCol;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
+    ctx.beginPath();ctx.moveTo(toX(tCollapse),mt+6);ctx.lineTo(toX(tCollapse),mt+ph);ctx.stroke();
+    ctx.setLineDash([]);
     // peak dot
     ctx.beginPath();ctx.arc(toX(tStar),toY(wStar),5,0,2*Math.PI);ctx.fillStyle=optCol;ctx.fill();
     // axes
@@ -1171,21 +1176,28 @@ function _welfare(tA,I){
     ctx.beginPath();ctx.moveTo(ml,mt+ph);ctx.lineTo(ml+pw,mt+ph);ctx.stroke();
     // tick labels
     ctx.fillStyle=labelCol;ctx.font='11px Menlo,Monaco,Consolas,monospace';ctx.textAlign='center';
-    [1,2,3,4].forEach(function(v){ctx.fillText(v,toX(v),mt+ph+16);});
+    gridTicks.forEach(function(v){ctx.fillText(v.toFixed(2),toX(v),mt+ph+16);});
     ctx.fillStyle=textCol;ctx.font='12px Menlo,Monaco,Consolas,monospace';ctx.textAlign='center';
     ctx.fillText('AI precision \u03c4\u2090',ml+pw/2,H-4);
     ctx.save();ctx.translate(13,mt+ph/2);ctx.rotate(-Math.PI/2);ctx.fillText('Welfare \u016a\u207a',0,0);ctx.restore();
-    // threshold labels
-    ctx.font='10px Menlo,Monaco,Consolas,monospace';ctx.textAlign='center';
-    ctx.fillStyle=optCol;ctx.fillText('\u03c4*\u2090\u2248'+tStar.toFixed(2),toX(tStar),mt+4);
-    if(tCollapse<tMax*0.97){ctx.fillStyle=collapseCol;ctx.fillText('\u03c4\u1d9c\u2090\u2248'+tCollapse.toFixed(2),toX(tCollapse),mt+4);}
-    // zone labels
-    ctx.fillStyle=dark?'rgba(74,144,217,0.7)':'rgba(30,90,160,0.6)';
-    if(tStar>0.25)ctx.fillText('AI helps',toX(tStar/2),mt+15);
-    ctx.fillStyle=dark?'rgba(200,120,0,0.7)':'rgba(150,80,0,0.6)';
-    if(tCollapse-tStar>0.3)ctx.fillText('AI harms',toX((tStar+tCollapse)/2),mt+15);
-    ctx.fillStyle=dark?'rgba(224,92,42,0.7)':'rgba(180,60,20,0.6)';
-    if(tMax-tCollapse>0.2)ctx.fillText('collapse',toX((tCollapse+tMax)/2),mt+15);
+    // threshold labels — offset to avoid overlap
+    ctx.font='10px Menlo,Monaco,Consolas,monospace';
+    var tStarX=toX(tStar),tColX=toX(tCollapse);
+    var labY=mt+4;
+    ctx.textAlign='center';
+    ctx.fillStyle=optCol;
+    ctx.fillText('\u03c4*\u2090\u2248'+tStar.toFixed(2),tStarX,labY);
+    ctx.fillStyle=collapseCol;
+    // if labels would overlap, offset the collapse label downward
+    var offset=(Math.abs(tColX-tStarX)<60)?14:0;
+    ctx.fillText('\u03c4\u1d9c\u2090\u2248'+tCollapse.toFixed(2),tColX,labY+offset);
+    // zone labels — only if zone is wide enough
+    ctx.font='10px Menlo,Monaco,Consolas,monospace';
+    var zoneH=mt+22;
+    var pxStar=toX(tStar),pxCol=toX(tCollapse),pxMax=toX(tMax);
+    if(pxStar>60){ctx.fillStyle=dark?'rgba(74,144,217,0.8)':'rgba(30,90,160,0.6)';ctx.textAlign='center';ctx.fillText('AI helps',toX(tStar/2),zoneH);}
+    if(pxCol-pxStar>60){ctx.fillStyle=dark?'rgba(200,120,0,0.8)':'rgba(150,80,0,0.6)';ctx.textAlign='center';ctx.fillText('AI harms',toX((tStar+tCollapse)/2),zoneH);}
+    if(pxMax-pxCol>50){ctx.fillStyle=dark?'rgba(224,92,42,0.8)':'rgba(180,60,20,0.6)';ctx.textAlign='center';ctx.fillText('collapse',toX((tCollapse+tMax)/2),zoneH);}
     // caption
     var ratio=tCollapse>0.05?(tStar/tCollapse).toFixed(2):'\u2014';
     caption.textContent='Welfare peaks at \u03c4*\u2090\u2248'+tStar.toFixed(2)+' then falls. Collapse at \u03c4\u1d9c\u2090\u2248'+tCollapse.toFixed(2)+'. Ratio \u03c4*/\u03c4\u1d9c\u2248'+ratio+' (theory: approaches 1/\u03b1\u22480.87 as I\u2192\u221e). Drag I \u2191 to watch both thresholds grow \u2014 but only logarithmically.';
