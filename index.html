@@ -387,6 +387,48 @@ details.ap .box-body{border-color:var(--border);font-size:14px;color:var(--text2
 
 <hr>
 
+<!-- DIAGRAM -->
+<div id="diag" style="margin-bottom:0">
+<div class="lbl">Interactive diagram</div>
+<h2>The dynamics, visualised</h2>
+<p>This is the core of Figures 1 &amp; 2 from the paper. The curve F(X) maps today&#8217;s community knowledge stock to tomorrow&#8217;s. Steady states are where F(X) crosses the 45&deg; line. Use the sliders to see how AI precision and knowledge-sharing infrastructure shift the dynamics &#8212; and when collapse becomes inevitable.</p>
+
+<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--rl);padding:1rem 1.2rem;margin:1.2rem 0">
+  <div style="display:flex;flex-wrap:wrap;gap:0 2rem;margin-bottom:1rem">
+    <div style="flex:1;min-width:200px;margin-bottom:8px">
+      <div style="font-family:var(--mono);font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">AI precision &tau;<sub>A</sub> &nbsp;<span id="tA-val" style="color:var(--text);font-weight:600">0.0</span></div>
+      <input type="range" id="tA-slider" min="0" max="400" value="0" step="1" style="width:100%">
+    </div>
+    <div style="flex:1;min-width:200px;margin-bottom:8px">
+      <div style="font-family:var(--mono);font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">Aggregation capacity I &nbsp;<span id="I-val" style="color:var(--text);font-weight:600">1.0</span></div>
+      <input type="range" id="I-slider" min="50" max="400" value="100" step="1" style="width:100%">
+    </div>
+  </div>
+
+  <canvas id="fxCanvas" width="640" height="340" style="width:100%;display:block;border-radius:4px"></canvas>
+
+  <div style="display:flex;flex-wrap:wrap;gap:6px 20px;margin-top:10px">
+    <div style="display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--text2)"><span style="width:24px;height:2px;background:#4a90d9;display:inline-block;border-radius:1px"></span>F(X) &mdash; knowledge transition map</div>
+    <div style="display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--text2)"><span style="width:24px;height:1px;background:var(--text3);display:inline-block;border-top:1.5px dashed var(--text3)"></span>45&deg; line (no change)</div>
+    <div style="display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--text2)"><span style="width:10px;height:10px;border-radius:50%;background:#e05c2a;display:inline-block"></span>Stable equilibrium</div>
+    <div style="display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--text2)"><span style="width:10px;height:10px;border-radius:50%;border:2px solid #e05c2a;background:transparent;display:inline-block"></span>Unstable (basin boundary)</div>
+  </div>
+
+  <div id="diag-caption" style="font-family:var(--mono);font-size:11px;color:var(--text2);margin-top:10px;line-height:1.5;min-height:2.5em;padding:8px 10px;background:var(--bg3);border-radius:4px"></div>
+</div>
+
+<details class="cs">
+  <summary><span class="arr">&#9658;</span>&nbsp;CS translation &middot; How to read this diagram</summary>
+  <div class="box-body">
+    <p><strong>The map F(X):</strong> tells you where the knowledge stock goes next period, given where it is today. If F(X) &gt; X (curve above the 45&deg; line), knowledge grows. If F(X) &lt; X (curve below), knowledge shrinks. Fixed points (intersections with the 45&deg; line) are equilibria.</p>
+    <p><strong>Stable vs unstable fixed points:</strong> a fixed point is stable if nearby trajectories converge to it (slope of F &lt; slope of 45&deg; line at the crossing), unstable if they diverge (slope &gt; 1). The unstable middle point X&#772;m is the basin boundary &#8212; think of it as a ridge between two valleys.</p>
+    <p><strong>What the sliders do:</strong> increasing &tau;A shifts F(X) downward &#8212; crowded-out effort means less future knowledge. Increasing I shifts F(X) upward &#8212; better aggregation makes the same effort produce more public knowledge. Watch the positive fixed points approach each other as &tau;A rises: that&#8217;s the saddle-node bifurcation. When they collide and vanish, complete collapse is inevitable.</p>
+  </div>
+</details>
+</div>
+
+<hr>
+
 <!-- SECTION 4 -->
 <div id="s4">
 <div class="lbl">Section 4</div>
@@ -682,7 +724,321 @@ details.ap .box-body{border-color:var(--border);font-size:14px;color:var(--text2
 </details>
 </div>
 
-<div class="footer">Acemoglu, Kong &amp; Ozdaglar &middot; NBER WP 34910 &middot; February 2026 &middot; Full annotated reader v2 &mdash; full paper text + CS annotations + reference summaries</div>
+<div class="footer">Acemoglu, Kong &amp; Ozdaglar &middot; NBER WP 34910 &middot; February 2026 &middot; Full annotated reader v2 &mdash; full paper text + CS annotations + reference summaries + interactive diagram</div>
 </div>
+
+<script>
+(function(){
+  // ── Model parameters (fixed) ──
+  // alpha-1 = 0.18 < 0.25: we're in the collapse-possible regime
+  var ALPHA = 1.18;
+  var SIGMA2 = 0.35;   // knowledge drift variance
+  var LG = 2.5;        // public learning productivity
+  var LI = 1.0;        // private learning productivity
+  var S2INV = 0.4;     // prior precision on idiosyncratic state (sigma^-2)
+  var DX = 0.92;       // complementarity gain
+  var XMAX = 1.0 / SIGMA2;  // upper bound on precision = Sigma^-2
+
+  // ── Normal distribution helpers ──
+  function phi(x){ return Math.exp(-0.5*x*x)/Math.sqrt(2*Math.PI); }
+  function Phi(x){
+    var t=1/(1+0.2316419*Math.abs(x));
+    var p=t*(0.319381530+t*(-0.356563782+t*(1.781477937+t*(-1.821255978+t*1.330274429))));
+    var d=phi(x)*p;
+    return x>=0?1-d:d;
+  }
+  // G(tau) = P(|Z|<=1), Z~N(0,1/tau)
+  function G(tau){
+    if(tau<=0)return 0;
+    var s=Math.sqrt(tau);
+    return 2*Phi(s)-1;
+  }
+  // g(tau) = G'(tau) = phi(sqrt(tau))/sqrt(tau)
+  function g(tau){
+    if(tau<=1e-9)return 0;
+    var s=Math.sqrt(tau);
+    return phi(s)/s;
+  }
+
+  // ── Best-response effort: solve DX*G(X)*LI*g(S2INV+LI*e+tA) = e^(alpha-1) ──
+  function bestEffort(X, tA){
+    var GX=G(X);
+    if(GX<1e-10)return 0;
+    var am1=ALPHA-1;
+    // check if any effort is worthwhile: f(0+) = DX*GX*LI*g(S2INV+tA)
+    var fZero=DX*GX*LI*g(S2INV+tA);
+    if(fZero<=0)return 0;
+    // bisection on f(e) = DX*GX*LI*g(S2INV+LI*e+tA) - e^(am1)
+    var lo=0, hi=2.0;
+    // expand hi until f(hi)<0
+    for(var k=0;k<20;k++){
+      var fHi=DX*GX*LI*g(S2INV+LI*hi+tA)-Math.pow(hi,am1);
+      if(fHi<0)break;
+      hi*=2;
+    }
+    var fLo=DX*GX*LI*g(S2INV+LI*lo+tA)-Math.pow(lo+1e-9,am1);
+    if(fLo<=0)return 0;
+    for(var i=0;i<60;i++){
+      var mid=(lo+hi)/2;
+      var fMid=DX*GX*LI*g(S2INV+LI*mid+tA)-Math.pow(mid,am1);
+      if(fMid>0)lo=mid;else hi=mid;
+    }
+    return (lo+hi)/2;
+  }
+
+  // ── State transition map F(X) ──
+  function F(X, tA, I){
+    if(X<0)X=0;
+    var e=bestEffort(X,tA);
+    var inner=X+LG*I*e;
+    if(inner<=1e-10)return 0;
+    return 1/(SIGMA2+1/inner);
+  }
+
+  // ── Canvas drawing ──
+  var canvas=document.getElementById('fxCanvas');
+  var ctx=canvas.getContext('2d');
+  var tASlider=document.getElementById('tA-slider');
+  var ISlider=document.getElementById('I-slider');
+  var tAVal=document.getElementById('tA-val');
+  var IVal=document.getElementById('I-val');
+  var caption=document.getElementById('diag-caption');
+
+  function isDark(){
+    return window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches;
+  }
+
+  function draw(){
+    var W=canvas.width, H=canvas.height;
+    var tA=parseFloat(tASlider.value)/100;
+    var I=parseFloat(ISlider.value)/100;
+    tAVal.textContent=tA.toFixed(1);
+    IVal.textContent=I.toFixed(1);
+
+    var dark=isDark();
+    var bgCol=dark?'#252422':'#f2f0ec';
+    var gridCol=dark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
+    var axisCol=dark?'rgba(255,255,255,0.25)':'rgba(0,0,0,0.25)';
+    var lineCol45=dark?'rgba(255,255,255,0.22)':'rgba(0,0,0,0.22)';
+    var fxCol='#4a90d9';
+    var stableCol='#e05c2a';
+    var unstableStroke='#e05c2a';
+    var textCol=dark?'#b8b4ad':'#4a4845';
+    var labelCol=dark?'#706d68':'#8a8784';
+    var basinCollapse=dark?'rgba(224,92,42,0.10)':'rgba(224,92,42,0.07)';
+    var basinHigh=dark?'rgba(74,144,217,0.10)':'rgba(74,144,217,0.07)';
+
+    // margins
+    var ml=48, mr=16, mt=16, mb=42;
+    var pw=W-ml-mr, ph=H-mt-mb;
+
+    // coordinate helpers
+    var XLO=0, XHI=XMAX*1.05;
+    function toCanvasX(x){ return ml+((x-XLO)/(XHI-XLO))*pw; }
+    function toCanvasY(y){ var yc=Math.min(y,XHI*1.05); return mt+ph-(yc/(XHI*1.05))*ph; }
+
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle=bgCol;
+    ctx.fillRect(0,0,W,H);
+
+    // grid
+    ctx.strokeStyle=gridCol;
+    ctx.lineWidth=1;
+    var ticks=[0.5,1.0,1.5,2.0,2.5];
+    ticks.forEach(function(v){
+      if(v>XHI)return;
+      var cx=toCanvasX(v);
+      ctx.beginPath();ctx.moveTo(cx,mt);ctx.lineTo(cx,mt+ph);ctx.stroke();
+      var cy=toCanvasY(v);
+      ctx.beginPath();ctx.moveTo(ml,cy);ctx.lineTo(ml+pw,cy);ctx.stroke();
+    });
+
+    // compute F(X) over a grid of points
+    var N=180;
+    var pts=[];
+    for(var i=0;i<=N;i++){
+      var x=XLO+(XHI-XLO)*i/N;
+      var fx=F(x,tA,I);
+      pts.push({x:x,fx:fx});
+    }
+
+    // find fixed points (sign changes of F(x)-x)
+    var fixedPts=[];
+    for(var j=1;j<pts.length;j++){
+      var d0=pts[j-1].fx-pts[j-1].x;
+      var d1=pts[j].fx-pts[j].x;
+      if(d0===0){fixedPts.push(pts[j-1].x);continue;}
+      if(d0*d1<0){
+        // linear interpolation
+        var x0=pts[j-1].x,x1=pts[j].x;
+        var f0=d0,f1=d1;
+        var xstar=x0-f0*(x1-x0)/(f1-f0);
+        fixedPts.push(xstar);
+      }
+    }
+    // classify: stable if slope of F-Id < 0 at crossing (i.e. F'(x)<1)
+    // estimate numerically
+    var dx=0.005;
+    function stability(xfp){
+      var fp1=F(xfp+dx,tA,I), fp0=F(xfp-dx,tA,I);
+      var slope=(fp1-fp0)/(2*dx);
+      return slope<1?'stable':'unstable';
+    }
+
+    // shade basins of attraction
+    var stableFPs=fixedPts.filter(function(xfp){ return xfp>0.001 && stability(xfp)==='stable'; });
+    var unstableFPs=fixedPts.filter(function(xfp){ return xfp>0.001 && stability(xfp)==='unstable'; });
+
+    if(unstableFPs.length>0){
+      // basin of collapse: x < Xm
+      var Xm=unstableFPs[0];
+      ctx.fillStyle=basinCollapse;
+      ctx.fillRect(toCanvasX(XLO),mt,toCanvasX(Xm)-toCanvasX(XLO),ph);
+      // basin of high state: x > Xm
+      ctx.fillStyle=basinHigh;
+      ctx.fillRect(toCanvasX(Xm),mt,toCanvasX(XHI)-toCanvasX(Xm),ph);
+    }
+
+    // 45-degree line
+    ctx.beginPath();
+    ctx.strokeStyle=lineCol45;
+    ctx.lineWidth=1.5;
+    ctx.setLineDash([6,4]);
+    ctx.moveTo(toCanvasX(XLO),toCanvasY(XLO));
+    ctx.lineTo(toCanvasX(XHI*0.95),toCanvasY(XHI*0.95));
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // F(X) curve
+    ctx.beginPath();
+    ctx.strokeStyle=fxCol;
+    ctx.lineWidth=2.5;
+    var started=false;
+    pts.forEach(function(p){
+      var cx=toCanvasX(p.x), cy=toCanvasY(p.fx);
+      if(!started){ctx.moveTo(cx,cy);started=true;}
+      else ctx.lineTo(cx,cy);
+    });
+    ctx.stroke();
+
+    // axes
+    ctx.strokeStyle=axisCol;
+    ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(ml,mt);ctx.lineTo(ml,mt+ph);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(ml,mt+ph);ctx.lineTo(ml+pw,mt+ph);ctx.stroke();
+
+    // tick labels
+    ctx.fillStyle=labelCol;
+    ctx.font='11px Menlo,Monaco,Consolas,monospace';
+    ctx.textAlign='center';
+    ticks.forEach(function(v){
+      if(v>XHI)return;
+      ctx.fillText(v.toFixed(1),toCanvasX(v),mt+ph+16);
+    });
+    ctx.textAlign='right';
+    ticks.forEach(function(v){
+      if(v>XHI)return;
+      ctx.fillText(v.toFixed(1),ml-5,toCanvasY(v)+4);
+    });
+
+    // axis labels
+    ctx.fillStyle=textCol;
+    ctx.font='12px Menlo,Monaco,Consolas,monospace';
+    ctx.textAlign='center';
+    ctx.fillText('X (knowledge stock)',ml+pw/2,H-4);
+    ctx.save();
+    ctx.translate(12,mt+ph/2);
+    ctx.rotate(-Math.PI/2);
+    ctx.fillText('F(X) (next period)',0,0);
+    ctx.restore();
+
+    // Sigma^-2 reference line
+    ctx.strokeStyle=dark?'rgba(255,255,255,0.12)':'rgba(0,0,0,0.12)';
+    ctx.lineWidth=1;
+    ctx.setLineDash([3,3]);
+    var yBound=toCanvasY(XMAX);
+    ctx.beginPath();ctx.moveTo(ml,yBound);ctx.lineTo(ml+pw,yBound);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=labelCol;
+    ctx.font='10px Menlo,Monaco,Consolas,monospace';
+    ctx.textAlign='left';
+    ctx.fillText('\u03a3\u207b\u00b2 (ceiling)',ml+4,yBound-4);
+
+    // draw fixed points
+    fixedPts.forEach(function(xfp){
+      if(xfp<0.001)return;
+      var stab=stability(xfp);
+      var cx=toCanvasX(xfp), cy=toCanvasY(xfp);
+      ctx.beginPath();
+      ctx.arc(cx,cy,5,0,2*Math.PI);
+      if(stab==='stable'){
+        ctx.fillStyle=stableCol;
+        ctx.fill();
+      } else {
+        ctx.strokeStyle=unstableStroke;
+        ctx.lineWidth=2;
+        ctx.stroke();
+      }
+    });
+
+    // zero fixed point (always stable in collapse regime)
+    ctx.beginPath();
+    ctx.arc(toCanvasX(0.0),toCanvasY(0.0),5,0,2*Math.PI);
+    ctx.fillStyle=stableCol;
+    ctx.fill();
+
+    // label fixed points
+    ctx.font='11px Menlo,Monaco,Consolas,monospace';
+    ctx.textAlign='center';
+    ctx.fillStyle=textCol;
+    if(fixedPts.length===0 || (fixedPts.length===1 && fixedPts[0]<0.01)){
+      // only zero FP
+    }
+    stableFPs.forEach(function(xfp,idx){
+      var cx=toCanvasX(xfp), cy=toCanvasY(xfp);
+      ctx.fillStyle=stableCol;
+      ctx.fillText('\u1d8b\u0304h',cx,cy-10);
+    });
+    unstableFPs.forEach(function(xfp){
+      var cx=toCanvasX(xfp), cy=toCanvasY(xfp);
+      ctx.fillStyle=unstableStroke;
+      ctx.fillText('\u1d8b\u0304m',cx,cy-10);
+    });
+
+    // caption
+    var nPos=stableFPs.length;
+    var nUnstable=unstableFPs.length;
+    var msg='';
+    if(nPos===0){
+      msg='\u26a0\ufe0f Complete collapse: F(X) < X for all X > 0. The only steady state is zero general knowledge. The economy converges here from any starting point.';
+    } else if(nUnstable>0){
+      var xm=unstableFPs[0].toFixed(2);
+      msg='Multiple steady states. Basin boundary at X\u0305m \u2248 '+xm+'. Starting above \u2192 converges to high knowledge. Starting below \u2192 collapses to zero. Try increasing \u03c4A to push X\u0305m and X\u0305h together.';
+    } else {
+      msg='Unique stable equilibrium X\u0305h. Any positive knowledge stock self-corrects here. Knowledge collapse steady state (X=0) is unstable \u2014 a knife-edge that cannot persist.';
+    }
+    caption.textContent=msg;
+  }
+
+  tASlider.addEventListener('input',draw);
+  ISlider.addEventListener('input',draw);
+  if(window.matchMedia){
+    window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',draw);
+  }
+
+  // handle canvas resolution for retina
+  (function scaleCanvas(){
+    var dpr=window.devicePixelRatio||1;
+    var rect=canvas.getBoundingClientRect();
+    if(rect.width>0){
+      canvas.width=Math.round(rect.width*dpr);
+      canvas.height=340*dpr;
+      ctx.scale(dpr,dpr);
+    }
+  })();
+
+  draw();
+})();
+</script>
 </body>
 </html>
